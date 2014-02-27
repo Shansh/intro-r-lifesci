@@ -191,11 +191,17 @@ hr {
 <body>
 <h1>Introduction to R and Bioconductor</h1>
 
+<ul>
+<li>EDIT: Insert information about course.</li>
+<li>EDIT: Link to slides (<a href="http://stephenturner.us/slides">http://stephenturner.us/slides</a>)</li>
+<li>EDIT: Information about setup (Rstudio, packages, etc.)</li>
+</ul>
+
 <h2>R basics</h2>
 
 <h3>Basic operations</h3>
 
-<p>R as a glorified calculator. Try typing this in directly into the console. Then start typing this into the editor, and save your script. Use the run button, or press <code>CMD</code>+<code>Enter</code> (<code>Ctrl</code>+<code>Enter</code> on Windows).</p>
+<p>R can be used as a glorified calculator. Try typing this in directly into the console. Then start typing this into the editor, and save your script. Use the run button, or press <code>CMD</code>+<code>Enter</code> (<code>Ctrl</code>+<code>Enter</code> on Windows).</p>
 
 <pre><code class="r">2 + 2
 5 * 4
@@ -204,7 +210,7 @@ hr {
 
 <p>R Knows order of operations.</p>
 
-<pre><code class="r">2 + 3 * 4
+<pre><code class="r">2 + 3 * 4/(5 + 3) * 15/2^2 + 3 * 4^2
 </code></pre>
 
 <h3>Functions</h3>
@@ -532,9 +538,9 @@ mtcars_8cyl
 
 <p>Next, check what your working directory is with <code>getwd()</code> with no arguments, and look up some help for <code>write.table()</code> and <code>write.csv()</code>. </p>
 
-<pre><code class="r">getwd()
-`?`(write.table)
-`?`(write.csv)
+<pre><code>getwd()
+?write.table
+?write.csv
 </code></pre>
 
 <p>Using RStudio, go to the Session menu, and select the directory (folder) you want to work from under the &ldquo;Set Working Directory&rdquo; menu. You can also do this manually with the <code>setwd()</code> command. </p>
@@ -548,11 +554,16 @@ setwd(&quot;/Users/sdt5z/Desktop/R&quot;)
 <pre><code class="r">write.csv(mtcars_8cyl, file = &quot;cars8.csv&quot;)
 </code></pre>
 
-<p>Data can be loaded using the Tools &ndash; Import Dataset &ndash; From text file menu in R studio. Or you can also load a dataset manually using <code>read.table()</code> or <code>read.csv()</code>. Here let&#39;s remove the dataset, and re-import it into an object called cars8 from the file we just saved.</p>
+<p>Data can be loaded using the Tools &ndash; Import Dataset &ndash; From text file menu in R studio. Or you can also load a dataset manually using <code>read.table()</code> or <code>read.csv()</code>. First, read the help on these functions:</p>
+
+<pre><code>?read.table
+?read.csv
+</code></pre>
+
+<p>Here let&#39;s remove the dataset, and re-import it into an object called cars8 from the file we just saved.</p>
 
 <pre><code class="r">rm(mtcars_8cyl)
 mtcars_8cyl
-`?`(read.table)
 cars8 &lt;- read.table(file = &quot;cars8.csv&quot;, header = TRUE, sep = &quot;,&quot;, row.names = 1)
 cars8
 rm(cars8)
@@ -565,6 +576,39 @@ cars8
 <p>In this section we&#39;ll analyze some publicly available gene expression data using R and bioinformatics-focused R packages in <a href="http://bioconductor.org/">Bioconductor</a>. But first, a bit about R <em>packages</em>. </p>
 
 <h3>Packages</h3>
+
+<p>Most generic R packages are hosted on the Comprehensive R Archive Network (CRAN, <a href="http://cran.us.r-project.org/">http://cran.us.r-project.org/</a>). To install one of these packages, you would use <code>install.packages(&quot;packagename&quot;)</code>. You only need to install a package once, then load it each time using <code>library(packagename)</code>. Let&#39;s install the <code>ggplot2</code> package, and load it.</p>
+
+<pre><code class="r"># Install only once.
+install.packages(&quot;ggplot2&quot;)
+
+# Load the package every time you want to use it.
+library(ggplot2)
+</code></pre>
+
+<h3>Bioconductor</h3>
+
+<p>Bioconductor packages work a bit different, and are not hosted on CRAN. Go to <a href="http://bioconductor.org/">http://bioconductor.org/</a> to learn more about the Bioconductor project. To use any Bioconductor package, you&#39;ll need a few &ldquo;core&rdquo; Bioconductor packages. Run the following commands to (1) download the installer script, and (2) install some core Bioconductor packages. You&#39;ll need internet connectivity to do this, and it&#39;ll take a few minutes, but it only needs to be done once.</p>
+
+<pre><code class="r"># Download the installer script
+source(&quot;http://bioconductor.org/biocLite.R&quot;)
+
+# biocLite() is the bioconductor installer function.  run it without any
+# arguments to install the core packages or update any installed packages.
+biocLite()
+</code></pre>
+
+<p>To install specific packages, first download the installer script if you haven&#39;t done so, and use <code>biocLite(&quot;packagename&quot;)</code>. This only needs to be done once then you can load the package like any other package. Let&#39;s download the <a href="http://www.bioconductor.org/packages/release/bioc/html/limma.html">limma package</a>: </p>
+
+<pre><code class="r"># Do only once
+source(&quot;http://bioconductor.org/biocLite.R&quot;)
+biocLite(&quot;limma&quot;)
+
+# Every time you need to use the limma package
+library(limma)
+</code></pre>
+
+<p>Bioconductor packages usually have great documentation in the form of <em>vignettes</em>. For a great example, take a look at the <a href="http://www.bioconductor.org/packages/release/bioc/vignettes/limma/inst/doc/usersguide.pdf">limma user&#39;s guide</a>. </p>
 
 </body>
 

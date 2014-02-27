@@ -1,10 +1,14 @@
 # Introduction to R and Bioconductor
 
+* EDIT: Insert information about course.
+* EDIT: Link to slides (<http://stephenturner.us/slides>)
+* EDIT: Information about setup (Rstudio, packages, etc.)
+
 ## R basics
 
 ### Basic operations
 
-R as a glorified calculator. Try typing this in directly into the console. Then start typing this into the editor, and save your script. Use the run button, or press `CMD`+`Enter` (`Ctrl`+`Enter` on Windows).
+R can be used as a glorified calculator. Try typing this in directly into the console. Then start typing this into the editor, and save your script. Use the run button, or press `CMD`+`Enter` (`Ctrl`+`Enter` on Windows).
 
 
 ```coffee
@@ -18,7 +22,7 @@ R Knows order of operations.
 
 
 ```coffee
-2 + 3 * 4
+2 + 3 * 4/(5 + 3) * 15/2^2 + 3 * 4^2
 ```
 
 
@@ -430,13 +434,11 @@ mtcars_8cyl
 
 Next, check what your working directory is with `getwd()` with no arguments, and look up some help for `write.table()` and `write.csv()`. 
 
-
-```coffee
-getwd()
-`?`(write.table)
-`?`(write.csv)
 ```
-
+getwd()
+?write.table
+?write.csv
+```
 
 Using RStudio, go to the Session menu, and select the directory (folder) you want to work from under the "Set Working Directory" menu. You can also do this manually with the `setwd()` command. 
 
@@ -455,13 +457,19 @@ write.csv(mtcars_8cyl, file = "cars8.csv")
 ```
 
 
-Data can be loaded using the Tools -- Import Dataset -- From text file menu in R studio. Or you can also load a dataset manually using `read.table()` or `read.csv()`. Here let's remove the dataset, and re-import it into an object called cars8 from the file we just saved.
+Data can be loaded using the Tools -- Import Dataset -- From text file menu in R studio. Or you can also load a dataset manually using `read.table()` or `read.csv()`. First, read the help on these functions:
+
+```
+?read.table
+?read.csv
+```
+
+Here let's remove the dataset, and re-import it into an object called cars8 from the file we just saved.
 
 
 ```coffee
 rm(mtcars_8cyl)
 mtcars_8cyl
-`?`(read.table)
 cars8 <- read.table(file = "cars8.csv", header = TRUE, sep = ",", row.names = 1)
 cars8
 rm(cars8)
@@ -476,6 +484,47 @@ In this section we'll analyze some publicly available gene expression data using
 
 ### Packages
 
+Most generic R packages are hosted on the Comprehensive R Archive Network (CRAN, <http://cran.us.r-project.org/>). To install one of these packages, you would use `install.packages("packagename")`. You only need to install a package once, then load it each time using `library(packagename)`. Let's install the `ggplot2` package, and load it.
+
+
+```coffee
+# Install only once.
+install.packages("ggplot2")
+
+# Load the package every time you want to use it.
+library(ggplot2)
+```
+
+
+### Bioconductor
+
+Bioconductor packages work a bit different, and are not hosted on CRAN. Go to <http://bioconductor.org/> to learn more about the Bioconductor project. To use any Bioconductor package, you'll need a few "core" Bioconductor packages. Run the following commands to (1) download the installer script, and (2) install some core Bioconductor packages. You'll need internet connectivity to do this, and it'll take a few minutes, but it only needs to be done once.
+
+
+```coffee
+# Download the installer script
+source("http://bioconductor.org/biocLite.R")
+
+# biocLite() is the bioconductor installer function.  run it without any
+# arguments to install the core packages or update any installed packages.
+biocLite()
+```
+
+
+To install specific packages, first download the installer script if you haven't done so, and use `biocLite("packagename")`. This only needs to be done once then you can load the package like any other package. Let's download the [limma package](http://www.bioconductor.org/packages/release/bioc/html/limma.html): 
+
+
+```coffee
+# Do only once
+source("http://bioconductor.org/biocLite.R")
+biocLite("limma")
+
+# Every time you need to use the limma package
+library(limma)
+```
+
+
+Bioconductor packages usually have great documentation in the form of *vignettes*. For a great example, take a look at the [limma user's guide](http://www.bioconductor.org/packages/release/bioc/vignettes/limma/inst/doc/usersguide.pdf). 
 
 
 
