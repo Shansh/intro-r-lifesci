@@ -1,4 +1,4 @@
-# Introduction to R and Bioconductor
+# Introduction to R for Life Scientists
 
 * EDIT: Insert information about course.
 * EDIT: Link to slides (<http://stephenturner.us/slides>)

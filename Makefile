@@ -7,4 +7,5 @@ clean:
 
 %.html: %.Rmd
 	Rscript -e "knitr::knit2html('$*.Rmd')"
+	Rscript -e "knitr::purl('$*.Rmd')"
 	gsed -i 's/```r/```coffee/g' $*.md
