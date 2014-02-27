@@ -1,0 +1,30 @@
+# Introduction to R and Bioconductor for Cell Biology 8401
+
+## R basics
+
+R as a glorified calculator. Try typing this in directly into the console. Then start typing this into the editor, and save your script. Use the run button, or press `CMD`+`Enter` (`Ctrl`+`Enter` on Windows).
+
+```{r}
+2+2
+5*4
+2^3
+```
+
+R Knows order of operations
+
+```{r}
+2+3*4
+```
+
+R has built-in functions
+
+```{r}
+sqrt(144)
+log(1000)
+```
+
+Get help by typing a question mark in front of the function's name:
+
+```{r}
+?log
+```
