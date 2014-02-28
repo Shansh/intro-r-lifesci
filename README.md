@@ -11,7 +11,7 @@
 R can be used as a glorified calculator. Try typing this in directly into the console. Then start typing this into the editor, and save your script. Use the run button, or press `CMD`+`Enter` (`Ctrl`+`Enter` on Windows).
 
 
-```r
+```coffee
 2 + 2
 5 * 4
 2^3
@@ -21,7 +21,7 @@ R can be used as a glorified calculator. Try typing this in directly into the co
 R Knows order of operations.
 
 
-```r
+```coffee
 2 + 3 * 4/(5 + 3) * 15/2^2 + 3 * 4^2
 ```
 
@@ -31,7 +31,7 @@ R Knows order of operations.
 R has built-in functions.
 
 
-```r
+```coffee
 # Notice that this is a comment.  Anything behind a # is 'commented out' and
 # is not run.
 sqrt(144)
@@ -48,7 +48,7 @@ Get help by typing a question mark in front of the function's name:
 Note syntax highlighting when typing this into the editor. Also note how we pass *arguments* to functions. Finally, see how you can *next* one function inside of another (here taking the square root of the log-base-10 of 1000).
 
 
-```r
+```coffee
 log(1000)
 log(1000, base = 10)
 sqrt(log(1000, base = 10))
@@ -60,7 +60,7 @@ sqrt(log(1000, base = 10))
 Let's create some numeric vectors. Vectors (aka "arrays" in Perl, "lists" in Python) are single *objects* containing an ordered collection of *elements*. A simple vector is a numeric vector, a single *object* containing several numbers. Here let's display a few vectors. We can also do vector arithmetic. When printing vectors to the screen that have lots of elements, notice that the bracketed number in the gutter of the output is just a counter indexing the number of elements in the vector.
 
 
-```r
+```coffee
 # Some simple numeric vectors:
 1:5
 6:10
@@ -80,7 +80,7 @@ seq(from = 2, to = 200, by = 4)
 You can store values in a variable or object. Use the `<-` operator for assignment. `=` also will work, but `<-` is conventional and preferred. Objects should start with a letter and can include numbers and underscores. Named variables are objects containing whatever is assigned to them. Remember, *everything is an object*.
 
 
-```r
+```coffee
 x <- 5
 x
 
@@ -104,7 +104,7 @@ x^y
 You can see what objects (variables) are stored by viewing the Environment tab in Rstudio. You can also use the `ls()` function. You can remove objects (variables) with the `rm()` function. You can do this one at a time or remove several objects at once.
 
 
-```r
+```coffee
 ls()
 rm(x)
 ls()
@@ -115,7 +115,7 @@ x  # oops! you should get an error because x no longer exists!
 ## Error: object 'x' not found
 ```
 
-```r
+```coffee
 rm(y, z)
 ```
 
@@ -125,7 +125,7 @@ rm(y, z)
 Use the `class()` function to see what *kind* of object a something is. You can run `class()` on constants, built-in objects, or objects you create. Let's create a character object and then get it's class. 
 
 
-```r
+```coffee
 class(42)
 class(log)
 name <- "Stephen"
@@ -137,7 +137,7 @@ class(name)
 Certain *functions* operate only on certain *classes* of object. Here, `name` is a `character` class, assigned to `"Stephen"`. The built-in `toupper()` function will operate on character objects, but not others. 
 
 
-```r
+```coffee
 toupper(name)  # name is an object of class character. methods or functions are associated with certain classes.
 ```
 
@@ -145,7 +145,7 @@ toupper(name)  # name is an object of class character. methods or functions are 
 ## [1] "STEPHEN"
 ```
 
-```r
+```coffee
 toupper(log)  # can't run a function that expects character on an object of class function
 ```
 
@@ -157,7 +157,7 @@ toupper(log)  # can't run a function that expects character on an object of clas
 We can combine values into a vector with the built-in `c()` function.
 
 
-```r
+```coffee
 # Get some help with ?c
 x <- c(1, 3, 5)
 x
@@ -169,7 +169,7 @@ length(x)
 Let's create and manipulate a character vector:
 
 
-```r
+```coffee
 y <- c("My", "name", "is", "Stephen")
 y
 class(y)
@@ -183,7 +183,7 @@ length(y)
 Try running the built-in `sum()` function on a numeric vector:
 
 
-```r
+```coffee
 sum(x)
 ```
 
@@ -191,7 +191,7 @@ sum(x)
 Combining characters with numerics results in coercing everything to be a character class. 
 
 
-```r
+```coffee
 y
 z <- c(x, y)
 z
@@ -202,7 +202,7 @@ class(z)
 Certain functions only operate on certain classes. You can't compute the `sum()` of a character vector!
 
 
-```r
+```coffee
 z
 ```
 
@@ -211,7 +211,7 @@ z
 ## [8] "Turner"
 ```
 
-```r
+```coffee
 sum(z)
 ```
 
@@ -227,7 +227,7 @@ Let's create a vector of 50 integers going from 101 to 150. We can access certai
 *Special note: R indexes vectors starting at 1. This is different from many other languages, including Perl and Python, which index starting from zero.*
 
 
-```r
+```coffee
 # Create the vector.
 x <- 101:150
 
@@ -255,7 +255,7 @@ Later on we'll go over how we load our own data, but for now, let's use a built-
 Let's load the data first. Type the name of the object itself (`mtcars`) to view the entire data frame. *Note: doing this with large data frames can cause you trouble.*
 
 
-```r
+```coffee
 data(mtcars)
 class(mtcars)
 mtcars
@@ -270,7 +270,7 @@ There are several built-in functions that are useful for working with data frame
 * `summary()` works differently depending on what kind of object you pass to it. Passing a data frame to the `summary()` function prints out some summary statistics about each column (min, max, median, mean, etc.)
 
 
-```r
+```coffee
 head(mtcars)
 length(mtcars)
 dim(mtcars)
@@ -283,7 +283,7 @@ str(mtcars)
 We can access individual variables within a data frame using the `$` operator, e.g., `mydataframe$specificVariable`. Let's print out the number of cylinders for every car, and calculate the average miles per gallon for ever car in the dataset (using the built-in `mean()` function).
 
 
-```r
+```coffee
 # display the number of cylinders for each car.
 mtcars$cyl
 # first display MPG for all vehicles, then calculate the average.
@@ -295,7 +295,7 @@ mean(mtcars$mpg)
 We can also access certain rows or columns of a dataset by providing multiple indices using the syntax `mydataframe[rows, columns]`. Let's get the first 4 rows and the first two rows (MPG and # cylinders) from the dataset:
 
 
-```r
+```coffee
 head(mtcars)
 mtcars[1:4, 1:2]
 ```
@@ -314,7 +314,7 @@ The commands below will:
 Try some subsetting on your own.
 
 
-```r
+```coffee
 subset(mtcars, cyl == 6)
 subset(mtcars, cyl > 6)
 subset(mtcars, mpg >= 20 | disp < 100)
@@ -328,7 +328,7 @@ The `with()` function is particularly helpful. Let's say you wanted to compute s
 Try typing the following commands:
 
 
-```r
+```coffee
 # Display the number of cylinders.
 mtcars$cyl
 with(mtcars, cyl)
@@ -344,7 +344,7 @@ with(mtcars, mpg * cyl/disp)
 Plotting a single numeric variable goes down the rows and plots a value on the y-axis for each observation (index) in the data frame. 
 
 
-```r
+```coffee
 plot(mtcars$mpg)
 ```
 
@@ -355,19 +355,19 @@ This isn't a very useful figure. More appropriate might be a histogram. We can t
 
 
 
-```r
+```coffee
 hist(mtcars$mpg)
 ```
 
 ![plot of chunk unnamed-chunk-23](figure/unnamed-chunk-231.png) 
 
-```r
+```coffee
 hist(mtcars$mpg, breaks = 10)
 ```
 
 ![plot of chunk unnamed-chunk-23](figure/unnamed-chunk-232.png) 
 
-```r
+```coffee
 hist(mtcars$mpg, breaks = 10, col = "black")
 ```
 
@@ -377,7 +377,7 @@ hist(mtcars$mpg, breaks = 10, col = "black")
 We can create a scatterplot between two variables with `plot(varX, varY)`.
 
 
-```r
+```coffee
 # This would also work, but let's use with().  plot(mtcars$disp, mtcars$mpg)
 with(mtcars, plot(disp, mpg))
 ```
@@ -388,25 +388,25 @@ with(mtcars, plot(disp, mpg))
 There are hundreds of plotting parameters you can use to make your plot look exactly like you want. Let's use a solid-filled point instead of an open circle with the `pch=` argument, color the points red with the `col=` argument, give it a title by passing a character object to the `main=` argument, and change the x and y axis titles with the `xlab=` and `ylab=` arguments, respectively. Let's go through this one step at a time. 
 
 
-```r
+```coffee
 with(mtcars, plot(disp, mpg, pch = 16))
 ```
 
 ![plot of chunk unnamed-chunk-25](figure/unnamed-chunk-251.png) 
 
-```r
+```coffee
 with(mtcars, plot(disp, mpg, pch = 16, col = "red"))
 ```
 
 ![plot of chunk unnamed-chunk-25](figure/unnamed-chunk-252.png) 
 
-```r
+```coffee
 with(mtcars, plot(disp, mpg, pch = 16, col = "red", main = "MPG vs Displacement"))
 ```
 
 ![plot of chunk unnamed-chunk-25](figure/unnamed-chunk-253.png) 
 
-```r
+```coffee
 with(mtcars, plot(disp, mpg, pch = 16, col = "red", main = "MPG vs Displacement", 
     ylab = "Fuel Economy (MPG)", xlab = "Displacement (cu. in.)"))
 ```
@@ -426,7 +426,7 @@ On your own, try plotting horsepower vs displacement for vehicles with more than
 First, lets create a small dataset consisting of only 8 cylinder cars. 
 
 
-```r
+```coffee
 mtcars_8cyl <- subset(mtcars, cyl == 8)
 mtcars_8cyl
 ```
@@ -443,7 +443,7 @@ getwd()
 Using RStudio, go to the Session menu, and select the directory (folder) you want to work from under the "Set Working Directory" menu. You can also do this manually with the `setwd()` command. 
 
 
-```r
+```coffee
 getwd()
 setwd("/Users/sdt5z/Desktop/R")
 ```
@@ -452,7 +452,7 @@ setwd("/Users/sdt5z/Desktop/R")
 Once you've set your working directory either using RStudio or on the command line, save the new reduced data frame to a comma-separated file called `cars8.csv` using the `write.csv()` function. 
 
 
-```r
+```coffee
 write.csv(mtcars_8cyl, file = "cars8.csv")
 ```
 
@@ -467,7 +467,7 @@ Data can be loaded using the Tools -- Import Dataset -- From text file menu in R
 Here let's remove the dataset, and re-import it into an object called cars8 from the file we just saved.
 
 
-```r
+```coffee
 rm(mtcars_8cyl)
 mtcars_8cyl
 cars8 <- read.table(file = "cars8.csv", header = TRUE, sep = ",", row.names = 1)
@@ -487,7 +487,7 @@ In this section we'll analyze some publicly available gene expression data using
 Most generic R packages are hosted on the Comprehensive R Archive Network (CRAN, <http://cran.us.r-project.org/>). To install one of these packages, you would use `install.packages("packagename")`. You only need to install a package once, then load it each time using `library(packagename)`. Let's install the `ggplot2` package, and load it.
 
 
-```r
+```coffee
 # Install only once.
 install.packages("ggplot2")
 
@@ -501,7 +501,7 @@ library(ggplot2)
 Bioconductor packages work a bit different, and are not hosted on CRAN. Go to <http://bioconductor.org/> to learn more about the Bioconductor project. To use any Bioconductor package, you'll need a few "core" Bioconductor packages. Run the following commands to (1) download the installer script, and (2) install some core Bioconductor packages. You'll need internet connectivity to do this, and it'll take a few minutes, but it only needs to be done once.
 
 
-```r
+```coffee
 # Download the installer script
 source("http://bioconductor.org/biocLite.R")
 
@@ -514,7 +514,7 @@ biocLite()
 To install specific packages, first download the installer script if you haven't done so, and use `biocLite("packagename")`. This only needs to be done once then you can load the package like any other package. Let's download the [limma package](http://www.bioconductor.org/packages/release/bioc/html/limma.html): 
 
 
-```r
+```coffee
 # Do only once
 source("http://bioconductor.org/biocLite.R")
 biocLite("limma")
