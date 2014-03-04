@@ -1,4 +1,14 @@
 
+## ----, eval=FALSE--------------------------------------------------------
+## install.packages("ggplot2")
+## 
+## source("http://bioconductor.org/biocLite.R")
+## biocLite()
+## biocLite("Biobase")
+## biocLite("GEOquery")
+## biocLite("limma")
+
+
 ## ----, results='hide'----------------------------------------------------
 2+2
 5*4
@@ -31,7 +41,7 @@ sqrt(log(1000, base=10))
 ## 
 ## # Get some help with the seq() function, then create a vector from 2 to 200 by 2s.
 ## # Notice how the seq() function works -- the `to` argument will never be exceeded.
-## ?seq
+## help(seq)
 ## seq(from=2, to=200, by=4)
 
 
@@ -241,7 +251,8 @@ mtcars_8cyl
 ## source("http://bioconductor.org/biocLite.R")
 ## 
 ## # biocLite() is the bioconductor installer function.
-## # run it without any arguments to install the core packages or update any installed packages.
+## # Run it without any arguments to install the core packages or update any installed packages.
+## # This requires internet connectivity and will take some time!
 ## biocLite()
 
 
@@ -254,165 +265,67 @@ mtcars_8cyl
 ## library(limma)
 
 
-## ----, eval=FALSE, echo=FALSE--------------------------------------------
-## # BioC --------------------------------------------------------------------
-## 
-## ## http://www.bioconductor.org/packages/2.11/bioc/vignettes/SPIA/inst/doc/SPIA.pdf
-## ## Download data from http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE4107
-## ## http://people.virginia.edu/~sdt5z/GSE4107_RAW.zip
-## ## Extract tar file, gunzip all the .CEL.gz files
-## 
-## # Do this in folder on desktop
-## setwd("~/R")
-## 
-## biocLite(c("affy", "AnnotationDbi", "hgu133plus2cdf", "hgu133plus2.db", "genefilter", "DBI", "annotate", "arrayQualityMetrics", "limma", "GOstats", "Category", "GO.db", "KEGG.db")
-## 
-## ?list.celfiles
-## library(affy)
-## ?list.celfiles
-## list.celfiles("GSE4107_RAW", full.names=T)
-## myfiles <- list.celfiles("GSE4107_RAW", full.names=T)
-## 
-## ?ReadAffy
-## myaffybatch <- ReadAffy(filenames=myfiles)
-## myaffybatch
-## class(myaffybatch)
-## ?"AffyBatch-class"
-## 
-## ?rma
-## eset <- rma(myaffybatch)
-## class(eset)
-## str(eset)
-## ?"ExpressionSet-class"
-## head(exprs(eset))
-## dim(exprs(eset))
-## 
-## ## Annotate the samples
-## pData(eset)
-## class(pData(eset))
-## pData(eset)$condition
-## rep("cancer", 12)
-## rep("healthy", 10)
-## c(rep("cancer", 12), rep("healthy", 10))
-## factor(c(rep("cancer", 12), rep("healthy", 10)))
-## pData(eset)$condition <- factor(c(rep("cancer", 12), rep("healthy", 10)))
-## pData(eset)
-## 
-## 
-## # filter the dataset
-## library(genefilter)
-## eset
-## ?featureFilter
-## eset <- featureFilter(eset, require.entrez=T, remove.dupEntrez=T, feature.exclude="^AFFX")
-## eset
-## 
-## ## Annotate the features
-## fData(eset)
-## annotation(eset)
-## library(annotate)
-## library(hgu133plus2.db)
-## ls("package:hgu133plus2.db")
-## ID     <- featureNames(eset)
-## class(ID)
-## head(ID)
-## head(exprs(eset))
-## ?lookUp
-## #trust me on this one
-## Symbol <- as.character(lookUp(ID, "hgu133plus2.db", "SYMBOL"))
-## Name   <- as.character(lookUp(ID, "hgu133plus2.db", "GENENAME"))
-## Entrez <- as.character(lookUp(ID, "hgu133plus2.db", "ENTREZID"))
-## tmp <- data.frame(ID=ID, Entrez=Entrez, Symbol=Symbol, Name=Name, stringsAsFactors=F)
-## head(tmp)
-## fData(eset) <- tmp
-## head(fData(eset))
-## rm(ID, Symbol, Name, Entrez, tmp)
-## 
-## # Quality Assessment ------------------------------------------------------
-## 
-## # Load the arrayQualityMetrics package
-## library(arrayQualityMetrics)
-## 
-## # Run arrayQualityMetrics on your eset, giving it the name of an ouput directory.
-## # intgroup is the name of the sample covariate(s) used to draw a colour side bar next to the heatmap. character matching column in pData(eset)
-## # also give it a title
-## ?arrayQualityMetrics
-## arrayQualityMetrics(eset, outdir="aqm", intgroup="condition", reporttitle="Quality Assessment Report")
-## # Now go open the current working directory, and open aqm/index.html in your browser
-## 
-## 
-## # Data Analysis -----------------------------------------------------------
-## 
-## ## The limma package will be used for analysis
-## library(limma)
-## 
-## ## Make the design and contrasts matrix
-## pData(eset)
-## design <- model.matrix(~0+condition, data=pData(eset))
-## design
-## class(design)
-## colnames(design)
-## colnames(design) <- c("cancer", "healthy")
-## design
-## colnames(design) <- sub("condition", "", colnames(design))
+## ----, message=FALSE-----------------------------------------------------
+# Bioconductor packages.
+# Use the installation instructions at http://www.bioconductor.org/install/
+# if you haven't already installed these (install once, load every time)
+library(Biobase)
+library(GEOquery)
+library(limma)
+library(arrayQualityMetrics)
+
+
+## ----, eval=FALSE--------------------------------------------------------
+## gset <- getGEO("GSE25724", GSEMatrix =TRUE, destdir=".", AnnotGPL=TRUE)
+## gset <- gset[[1]]
+## class(gset)
+
+
+## ----, eval=FALSE--------------------------------------------------------
+## # Removes spaces, colons, other weird symbols, inserts "." instead.
+## fvarLabels(gset) <- make.names(fvarLabels(gset))
+
+
+## ----, eval=FALSE--------------------------------------------------------
+## # group names for all samples
+## View(pData(gset))
+## rep("ctrl", 7)
+## rep("diab", 6)
+## condition <- c(rep("ctrl", 7), rep("diab", 6))
+## condition <- as.factor(condition)
+## gset$description <- condition
+
+
+## ----, eval=FALSE--------------------------------------------------------
+## arrayQualityMetrics(gset, outdir="aqm-report", intgroup="description")
+
+
+## ----, eval=FALSE--------------------------------------------------------
+## # Set up and view the design matrix
+## design <- model.matrix(~ description + 0, data=gset)
+## colnames(design) <- levels(condition)
 ## design
 ## 
-## ## make contrast matrix
-## contrast.matrix <- makeContrasts(cancer_v_healthy=cancer-healthy, levels=design)
-## contrast.matrix
+## # Set up and view the contrast matrix
+## cont.matrix <- makeContrasts(diab-ctrl, levels=design)
+## cont.matrix
 ## 
-## ## Fit model
-## fit <- lmFit(eset,design)
-## fit <- contrasts.fit(fit, contrast.matrix)
-## fit <- eBayes(fit)
-## class(fit)
+## # Fit a linear model, compute contrast coefficients and std errs, moderated t-tests and p-values:
+## fit <- lmFit(gset, design)
+## fit <- contrasts.fit(fit, cont.matrix)
+## fit <- eBayes(fit, proportion=0.01)
 ## 
-## ## Get statistics from that model fit
-## topTable(fit)
-## ?topTable
-## nrow(fit)
-## tt <- topTable(fit, number=nrow(fit))
+## # Extract the top 250 most differentially expressed genes, with an FDR correction
+## tt  <- topTable(fit, adjust="fdr", sort.by="p", number=250)
 ## 
-## head(tt)
-## class(tt)
-## dim(tt)
+## # Look at the results in RStudio
+## View(tt)
 ## 
-## ## First, write the entire results table to a csv file and open in Excel
-## ## Assignment: how many genes are significant at an adjusted p-value of 0.005?
-## ## Write this table to a CSV file and open it in excel
-## write.csv(tt, file="diffexpr-all.csv")
-## sig <- subset(tt, adj.P.Val<0.005)
-## dim(sig)
-## write.csv(sig, file="diffexpr-significant.csv")
-## 
-## ## volcano plot
-## with(tt, plot(logFC, -log10(adj.P.Val), pch=16, col="black"))
-## 
-## ## heatmap
-## heatmap(exprs(eset[featureNames(eset) %in% sig$ID, ]))
-## 
-## library(GOstats)
-## library(Category)
-## ?hyperGTest
-## ?"GOHyperGParams-class"
-## myuniverse <- tt$Entrez
-## mysiggenes <- sig$Entrez
-## myanno <- annotation(eset)
-## 
-## ?"KEGGHyperGParams-class"
-## library(KEGG.db)
-## KEGGparams <- new("KEGGHyperGParams", geneIds=mysiggenes, universeGeneIds=myuniverse, annotation=myanno, testDirection="over", pvalueCutoff=.05)
-## KEGGres <- hyperGTest(KEGGparams)
-## KEGGres
-## class(KEGGres)
-## ?"KEGGHyperGResult-class"
-## ?"HyperGResult-accessors"
-## summary(KEGGres)
-## htmlReport(KEGGres, file="KEGG report.html")
-## 
-## ?"GOHyperGParams-class"
-## library(GO.db)
-## GOparams <- new("GOHyperGParams", geneIds=mysiggenes, universeGeneIds=myuniverse, annotation=myanno, conditional=TRUE, ontology="MF")
-## GOres <- hyperGTest(GOparams)
-## htmlReport(GOres, file="GO MF terms.html")
+## # Export the results to file
+## write.table(tt, file='top-250-genes.csv', row.names=F, sep=",")
+
+
+## ------------------------------------------------------------------------
+sessionInfo()
 
 

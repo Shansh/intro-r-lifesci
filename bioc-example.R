@@ -36,7 +36,7 @@ tt  <- topTable(fit, adjust="fdr", sort.by="p", number=250)
 
 View(tt)
 
-write.table(tT, file=stdout(), row.names=F, sep="\t")
+write.table(tt, file='top-250-genes.csv', row.names=F, sep=",")
 
 ## Boxplot
 dev.new(width=4+dim(gset)[[2]]/5, height=6)

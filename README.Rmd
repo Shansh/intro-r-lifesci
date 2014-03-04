@@ -59,9 +59,10 @@ sqrt(144)
 log(1000)
 ```
 
-Get help by typing a question mark in front of the function's name:
+Get help by typing a question mark in front of the function's name, or `help(functionname)`:
 
 ```
+help(log)
 ?log
 ```
 
@@ -86,7 +87,7 @@ Let's create some numeric vectors. Vectors (aka "arrays" in Perl, "lists" in Pyt
 
 # Get some help with the seq() function, then create a vector from 2 to 200 by 2s.
 # Notice how the seq() function works -- the `to` argument will never be exceeded.
-?seq
+help(seq)
 seq(from=2, to=200, by=4)
 ```
 
@@ -386,7 +387,7 @@ cars8 <- read.csv(file="cars8.csv", header=TRUE, row.names=1)
 cars8
 ```
 
-## Using R+Bioconductor for gene expression analysis
+## Using R and Bioconductor for gene expression analysis
 
 In this section we'll analyze some publicly available gene expression data using R and bioinformatics-focused R packages in [Bioconductor](http://bioconductor.org/). But first, a bit about R *packages*. 
 
@@ -437,23 +438,25 @@ In this demonstration, we're going to be using data from GEO Series accession nu
 
 You can go to the [GEO accession page](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE25724) and download the raw .CEL file data directly (at the very bottom, under "Supplementary file"). However, we are going to use a Bioconductor package called [GEOquery](http://www.bioconductor.org/packages/release/bioc/html/GEOquery.html) that allows us to *programmatically* access all data in GEO from within R. Take a look at the [GEOquery vignette](http://www.bioconductor.org/packages/release/bioc/vignettes/GEOquery/inst/doc/GEOquery.pdf) or Google around for "GEOquery tutorial" to learn more.
 
+#### Load packages
+
 First, we'll need to load the Bioconductor packages we'll be using:
 
-```{r, results='hide', message=FALSE}
+```{r, message=FALSE}
 # Bioconductor packages.
-# If you haven't installed already, use the instructions above, i.e.:
-# source("http://bioconductor.org/biocLite.R")
-# biocLite("Biobase")
-# biocLite("GEOquery")
-# ...etc.
+# Use the installation instructions at http://www.bioconductor.org/install/
+# if you haven't already installed these (install once, load every time)
 library(Biobase)
 library(GEOquery)
 library(limma)
+library(arrayQualityMetrics)
 ```
+
+#### Acquire and pre-process the data
 
 Next, let's get the data and verify that it's an [ExpressionSet](http://bioconductor.org/packages/release/bioc/vignettes/Biobase/inst/doc/ExpressionSetIntroduction.pdf)-class object.
 
-```{r, results='hide'}
+```{r, eval=FALSE}
 gset <- getGEO("GSE25724", GSEMatrix =TRUE, destdir=".", AnnotGPL=TRUE)
 gset <- gset[[1]]
 class(gset)
@@ -461,14 +464,14 @@ class(gset)
 
 Next we'll fix the names of the variables describing the features (probes) on the array. The variable names are non-standard, having things like spaces (e.g. `"Gene title"`) and colons (e.g. `"GO:Function"`), which can cause problems downstream. The `make.names()` function makes syntactically valid names out of character vectors.
 
-```{r, results='hide'}
+```{r, eval=FALSE}
 # Removes spaces, colons, other weird symbols, inserts "." instead.
 fvarLabels(gset) <- make.names(fvarLabels(gset))
 ```
 
 Next, let's take a look at the sample metadata. We can see that the first seven samples are non-diabetic islets and the last six are diabetic. Let's create a `condition` variable that indicates the disease state of each sample, and annotate the dataset's description with this new condition variable.
 
-```{r, results='hide'}
+```{r, eval=FALSE}
 # group names for all samples
 View(pData(gset))
 rep("ctrl", 7)
@@ -478,11 +481,50 @@ condition <- as.factor(condition)
 gset$description <- condition
 ```
 
-Before we do any analysis, let's do some quality control using the [arrayQualityMetrics](http://www.bioconductor.org/packages/release/bioc/html/arrayQualityMetrics.html) Bioconductor package. Note that this can take some time.
+#### Quality assessment 
+
+Before we do any analysis, let's do some quality assessment using the [arrayQualityMetrics](http://www.bioconductor.org/packages/release/bioc/html/arrayQualityMetrics.html) Bioconductor package. Note that this can take a few minutes and a good deal of RAM for multiple samples. The `arrayQualityMetrics()` function produces a number of useful outputs in a tidy HTML report. Open up the index.html file produced in the output directory and look at the metadata overview, between-array comparisons (distance heatmap/dendrograms, PCA), array density distrubutions (boxplots and density plots), variance-mean dependence, and MA plots. The text below each figure in the QA report gives a description of each figure and what you should be seeing.
 
 ```{r, eval=FALSE}
-
+arrayQualityMetrics(gset, outdir="aqm-report", intgroup="description")
 ```
 
-library(arrayQualityMetrics)
-arrayQualityMetrics(gset, outdir="aqm-report", intgroup="description")
+#### Differential expression analysis
+
+Finally, we'll do some data analysis. Below I'm using the [limma](http://www.bioconductor.org/packages/release/bioc/html/limma.html) (**li**near **m**odels for **m**icro**a**rray data) Bioconductor package for the analysis. Here we have a very simple two-group comparison, but limma can handle very complex multi-factorial designs including time-series, paired samples, and nested interaction models, among others. 
+
+First we specify a *design matrix* which indicates the experimental condition of each sample. Then we specify a *contrast* matrix that indicates the exact comparisons we want to do between samples. For an experiment that's this simple we don't really need a contrast matrix since the contrast that we want to perform (diabetic vs non-diabetic) is implicit in the design, but we di it here anyway for clarity.
+
+```{r, eval=FALSE}
+# Set up and view the design matrix
+design <- model.matrix(~ description + 0, data=gset)
+colnames(design) <- levels(condition)
+design
+
+# Set up and view the contrast matrix
+cont.matrix <- makeContrasts(diab-ctrl, levels=design)
+cont.matrix
+
+# Fit a linear model, compute contrast coefficients and std errs, moderated t-tests and p-values:
+fit <- lmFit(gset, design)
+fit <- contrasts.fit(fit, cont.matrix)
+fit <- eBayes(fit, proportion=0.01)
+
+# Extract the top 250 most differentially expressed genes, with an FDR correction
+tt  <- topTable(fit, adjust="fdr", sort.by="p", number=250)
+
+# Look at the results in RStudio
+View(tt)
+
+# Export the results to file
+write.table(tt, file='top-250-genes.csv', row.names=F, sep=",")
+```
+
+#### Record package and version info with `sessionInfo()`
+
+The `sessionInfo()` prints version information about R and any attached packages. It's a good practice to always run this command at the end of your R session and record it for the sake of reproducibility in the future.
+
+```{r}
+sessionInfo()
+```
+
