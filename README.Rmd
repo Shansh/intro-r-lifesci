@@ -15,13 +15,12 @@ Prior to the workshop, please download the software as below and take the pre-wo
 0. Run RStudio, and enter the following commands into the "Console" window (usually the lower-right, by default). This will download and install necessary add-on packages we will use in class.
 
 ```{r, eval=FALSE}
-install.packages("ggplot2")
-
 source("http://bioconductor.org/biocLite.R")
 biocLite()
 biocLite("Biobase")
 biocLite("GEOquery")
 biocLite("limma")
+biocLite("arrayQualityMetrics")
 ```
 
 ### Take the pre-workshop survey

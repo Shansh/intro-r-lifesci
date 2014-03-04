@@ -1,12 +1,11 @@
 
 ## ----, eval=FALSE--------------------------------------------------------
-## install.packages("ggplot2")
-## 
 ## source("http://bioconductor.org/biocLite.R")
 ## biocLite()
 ## biocLite("Biobase")
 ## biocLite("GEOquery")
 ## biocLite("limma")
+## biocLite("arrayQualityMetrics")
 
 
 ## ----, results='hide'----------------------------------------------------

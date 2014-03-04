@@ -16,13 +16,12 @@ Prior to the workshop, please download the software as below and take the pre-wo
 
 
 ```coffee
-install.packages("ggplot2")
-
 source("http://bioconductor.org/biocLite.R")
 biocLite()
 biocLite("Biobase")
 biocLite("GEOquery")
 biocLite("limma")
+biocLite("arrayQualityMetrics")
 ```
 
 
