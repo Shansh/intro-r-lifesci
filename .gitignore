@@ -1,6 +1,15 @@
-.Rproj.user
-.Rhistory
-.RData
+# OS stuff
 .DS_Store*
 ._*
 .Trashes
+
+# RStudio stuff
+.Rproj.user
+.Rhistory
+.RData
+
+# GEO stuff
+GPL*.gz
+GSE*.gz
+GDS*.gz
+GSM*.gz
