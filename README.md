@@ -463,11 +463,13 @@ mtcars_8cyl
 
 Next, check what your working directory is with `getwd()` with no arguments, and look up some help for `write.table()` and `write.csv()`. 
 
-```
+
+```coffee
 getwd()
-?write.table
-?write.csv
+help(write.table)
+help(write.csv)
 ```
+
 
 Using RStudio, go to the Session menu, and select the directory (folder) you want to work from under the "Set Working Directory" menu. You can also do this manually with the `setwd()` command. 
 
@@ -488,10 +490,12 @@ write.csv(mtcars_8cyl, file = "cars8.csv")
 
 Data can be loaded using the Tools -- Import Dataset -- From text file menu in R studio. Or you can also load a dataset manually using `read.table()` or `read.csv()`. First, read the help on these functions:
 
+
+```coffee
+help(read.table)
+help(read.csv)
 ```
-?read.table
-?read.csv
-```
+
 
 Here let's remove the dataset, and re-import it into an object called cars8 from the file we just saved.
 
@@ -627,7 +631,7 @@ arrayQualityMetrics(gset, outdir = "aqm-report", intgroup = "description")
 
 #### Differential expression analysis
 
-Finally, we'll do some data analysis. Below I'm using the [limma](http://www.bioconductor.org/packages/release/bioc/html/limma.html) (**li**near **m**odels for **m**icro**a**rray data) Bioconductor package for the analysis. Here we have a very simple two-group comparison, but limma can handle very complex multi-factorial designs including time-series, paired samples, and nested interaction models, among others. 
+Finally, we'll do some data analysis. Below I'm using the [limma](http://www.bioconductor.org/packages/release/bioc/html/limma.html) (linear models for microarray) Bioconductor package for the analysis. Here we have a very simple two-group comparison, but limma can handle very complex multi-factorial designs including time-series, paired samples, and nested interaction models, among others. 
 
 First we specify a *design matrix* which indicates the experimental condition of each sample. Then we specify a *contrast* matrix that indicates the exact comparisons we want to do between samples. For an experiment that's this simple we don't really need a contrast matrix since the contrast that we want to perform (diabetic vs non-diabetic) is implicit in the design, but we di it here anyway for clarity.
 

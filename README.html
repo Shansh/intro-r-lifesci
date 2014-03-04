@@ -564,9 +564,9 @@ mtcars_8cyl
 
 <p>Next, check what your working directory is with <code>getwd()</code> with no arguments, and look up some help for <code>write.table()</code> and <code>write.csv()</code>. </p>
 
-<pre><code>getwd()
-?write.table
-?write.csv
+<pre><code class="r">getwd()
+help(write.table)
+help(write.csv)
 </code></pre>
 
 <p>Using RStudio, go to the Session menu, and select the directory (folder) you want to work from under the &ldquo;Set Working Directory&rdquo; menu. You can also do this manually with the <code>setwd()</code> command. </p>
@@ -582,8 +582,8 @@ setwd(&quot;/Users/sdt5z/Desktop/R&quot;)
 
 <p>Data can be loaded using the Tools &ndash; Import Dataset &ndash; From text file menu in R studio. Or you can also load a dataset manually using <code>read.table()</code> or <code>read.csv()</code>. First, read the help on these functions:</p>
 
-<pre><code>?read.table
-?read.csv
+<pre><code class="r">help(read.table)
+help(read.csv)
 </code></pre>
 
 <p>Here let&#39;s remove the dataset, and re-import it into an object called cars8 from the file we just saved.</p>
@@ -693,7 +693,7 @@ gset$description &lt;- condition
 
 <h4>Differential expression analysis</h4>
 
-<p>Finally, we&#39;ll do some data analysis. Below I&#39;m using the <a href="http://www.bioconductor.org/packages/release/bioc/html/limma.html">limma</a> (<strong>li</strong>near <strong>m</strong>odels for <strong>m</strong>icro<strong>a</strong>rray data) Bioconductor package for the analysis. Here we have a very simple two-group comparison, but limma can handle very complex multi-factorial designs including time-series, paired samples, and nested interaction models, among others. </p>
+<p>Finally, we&#39;ll do some data analysis. Below I&#39;m using the <a href="http://www.bioconductor.org/packages/release/bioc/html/limma.html">limma</a> (linear models for microarray) Bioconductor package for the analysis. Here we have a very simple two-group comparison, but limma can handle very complex multi-factorial designs including time-series, paired samples, and nested interaction models, among others. </p>
 
 <p>First we specify a <em>design matrix</em> which indicates the experimental condition of each sample. Then we specify a <em>contrast</em> matrix that indicates the exact comparisons we want to do between samples. For an experiment that&#39;s this simple we don&#39;t really need a contrast matrix since the contrast that we want to perform (diabetic vs non-diabetic) is implicit in the design, but we di it here anyway for clarity.</p>
 
