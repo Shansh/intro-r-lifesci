@@ -1,10 +1,36 @@
 # Introduction to R for Life Scientists
 
-* EDIT: Insert information about course.
-* EDIT: Link to slides (<http://stephenturner.us/slides>)
-* EDIT: Information about setup (Rstudio, packages, etc.)
+This workshop is directed toward life scientists with little to no experience with statistical computing or bioinformatics. This interactive workshop will introduce the R statistical computing environment, including basic instruction in data types, variables, array manipulation, functions, data frames, data import/export, visualization, and using packages. At the end of the workshop, participants will see a live demonstration of a real biomedical application - analysis of publicly available gene expression microarray data. This will demo (1) how to search for and acquire publicly accessible data from NCBI Gene Expression Omnibus, and (2) how to use Bioconductor packages to import, process, QC, analyze, and visualize the results of the analysis. By the end of the workshop, participants will be able to use R for basic data manipulation and visualization, and will know where to look for further help and instruction. Participants will also be exposed to downloading and analyzing publicly available gene expression data. An advanced follow-on course will go through a gene expression data analysis in detail. 
+
+Link to slides: *coming soon.*
+
+## Before coming
+
+Prior to the workshop, please download the software as below and take the pre-workshop survey.
+
+### Software setup
+
+0. Download and install R for [Mac OS X](http://cran.rstudio.com/bin/macosx/R-3.0.2.pkg) or [Windows](http://cran.rstudio.com/bin/windows/base/R-3.0.2-win.exe)
+0. Download and install RStudio Desktop: <http://www.rstudio.com/ide/download/desktop>.
+0. Run RStudio, and enter the following commands into the "Console" window (usually the lower-right, by default). This will download and install necessary add-on packages we will use in class.
+
+```{r, eval=FALSE}
+install.packages("ggplot2")
+
+source("http://bioconductor.org/biocLite.R")
+biocLite()
+biocLite("Biobase")
+biocLite("GEOquery")
+biocLite("limma")
+```
+
+### Take the pre-workshop survey
+
+Please complete [this very short survey](https://docs.google.com/forms/d/1Ef4r-5yTOZO-rMGyjZ5M-wP3Q_j2WPtkp1HM_ksApnw/viewform) (it should take you less than 60 seconds). 
 
 ## R basics
+
+The first part of this workshop will demonstrate very basic functionality in r, including functions, functions, vectors, creating variables, getting help, subsetting, data frames, plotting, and reading/writing files.
 
 ### Basic operations
 
@@ -385,7 +411,8 @@ Bioconductor packages work a bit different, and are not hosted on CRAN. Go to <h
 source("http://bioconductor.org/biocLite.R")
 
 # biocLite() is the bioconductor installer function.  
-# run it without any arguments to install the core packages or update any installed packages.
+# Run it without any arguments to install the core packages or update any installed packages.
+# This requires internet connectivity and will take some time!
 biocLite()
 ```
 
@@ -402,165 +429,60 @@ library(limma)
 
 Bioconductor packages usually have great documentation in the form of *vignettes*. For a great example, take a look at the [limma user's guide](http://www.bioconductor.org/packages/release/bioc/vignettes/limma/inst/doc/usersguide.pdf). 
 
+### Analyzing publicly available microarray data
 
-```{r, eval=FALSE, echo=FALSE}
-# BioC --------------------------------------------------------------------
+Now, let's analyze some publicly available gene expression microarray data. NCBI Gene Expression Omnibus (<http://www.ncbi.nlm.nih.gov/geo/>) is an international public repository that archives and freely distributes microarray, next-generation sequencing, and other forms of high-throughput functional genomics data submitted by the research community. Many publishers require gene expression data be submitted to GEO and made publicly available before publication. You can learn a lot more about GEO by reading their [overview](http://www.ncbi.nlm.nih.gov/geo/info/overview.html) and [FAQ](http://www.ncbi.nlm.nih.gov/geo/info/faq.html) pages. At the time of this writing, GEO hosts over 45,000 studies comprising over 1,000,000 samples on over 10,000 different technology platforms.
 
-## http://www.bioconductor.org/packages/2.11/bioc/vignettes/SPIA/inst/doc/SPIA.pdf
-## Download data from http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE4107
-## http://people.virginia.edu/~sdt5z/GSE4107_RAW.zip
-## Extract tar file, gunzip all the .CEL.gz files
+In this demonstration, we're going to be using data from GEO Series accession number GSE25724. You can enter this number in the search box on the GEO homepage, or use [this direct link](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE25724). In this study, the authors performed microarray analysis to evaluate differences in the transcriptome of type 2 diabetic human islets compared to non-diabetic islet samples. Human pancreatic islets were isolated from the pancreas of organ donors by collagenase digestion followed by density gradient purification, then hand-picked and cultured two days in M199 culture medium. Seven non-diabetic islet samples and six diabetic islet samples were hybridized to the Affymetrix GeneChip Human Genome U133A microarray. The results were published in: Dominguez V, et al. Class II phosphoinositide 3-kinase regulates exocytosis of insulin granules in pancreatic beta cells. *J Biol Chem 2011* Feb 11;286(6):4216-25. PMID: [21127054](http://www.ncbi.nlm.nih.gov/pubmed/21127054). 
 
-# Do this in folder on desktop
-setwd("~/R")
+You can go to the [GEO accession page](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE25724) and download the raw .CEL file data directly (at the very bottom, under "Supplementary file"). However, we are going to use a Bioconductor package called [GEOquery](http://www.bioconductor.org/packages/release/bioc/html/GEOquery.html) that allows us to *programmatically* access all data in GEO from within R. Take a look at the [GEOquery vignette](http://www.bioconductor.org/packages/release/bioc/vignettes/GEOquery/inst/doc/GEOquery.pdf) or Google around for "GEOquery tutorial" to learn more.
 
-biocLite(c("affy", "AnnotationDbi", "hgu133plus2cdf", "hgu133plus2.db", "genefilter", "DBI", "annotate", "arrayQualityMetrics", "limma", "GOstats", "Category", "GO.db", "KEGG.db")
+First, we'll need to load the Bioconductor packages we'll be using:
 
-?list.celfiles
-library(affy)
-?list.celfiles
-list.celfiles("GSE4107_RAW", full.names=T)
-myfiles <- list.celfiles("GSE4107_RAW", full.names=T)
-
-?ReadAffy
-myaffybatch <- ReadAffy(filenames=myfiles)
-myaffybatch
-class(myaffybatch)
-?"AffyBatch-class"
-
-?rma
-eset <- rma(myaffybatch)
-class(eset)
-str(eset)
-?"ExpressionSet-class"
-head(exprs(eset))
-dim(exprs(eset))
-
-## Annotate the samples
-pData(eset)
-class(pData(eset))
-pData(eset)$condition
-rep("cancer", 12)
-rep("healthy", 10)
-c(rep("cancer", 12), rep("healthy", 10))
-factor(c(rep("cancer", 12), rep("healthy", 10)))
-pData(eset)$condition <- factor(c(rep("cancer", 12), rep("healthy", 10)))
-pData(eset)
-
-
-# filter the dataset
-library(genefilter)
-eset
-?featureFilter
-eset <- featureFilter(eset, require.entrez=T, remove.dupEntrez=T, feature.exclude="^AFFX")
-eset
-
-## Annotate the features
-fData(eset)
-annotation(eset)
-library(annotate)
-library(hgu133plus2.db)
-ls("package:hgu133plus2.db")
-ID     <- featureNames(eset)
-class(ID)
-head(ID)
-head(exprs(eset))
-?lookUp
-#trust me on this one
-Symbol <- as.character(lookUp(ID, "hgu133plus2.db", "SYMBOL"))
-Name   <- as.character(lookUp(ID, "hgu133plus2.db", "GENENAME"))
-Entrez <- as.character(lookUp(ID, "hgu133plus2.db", "ENTREZID"))
-tmp <- data.frame(ID=ID, Entrez=Entrez, Symbol=Symbol, Name=Name, stringsAsFactors=F)
-head(tmp)
-fData(eset) <- tmp
-head(fData(eset))
-rm(ID, Symbol, Name, Entrez, tmp)
-
-# Quality Assessment ------------------------------------------------------
-
-# Load the arrayQualityMetrics package
-library(arrayQualityMetrics)
-
-# Run arrayQualityMetrics on your eset, giving it the name of an ouput directory.
-# intgroup is the name of the sample covariate(s) used to draw a colour side bar next to the heatmap. character matching column in pData(eset)
-# also give it a title
-?arrayQualityMetrics
-arrayQualityMetrics(eset, outdir="aqm", intgroup="condition", reporttitle="Quality Assessment Report")
-# Now go open the current working directory, and open aqm/index.html in your browser
-
-
-# Data Analysis -----------------------------------------------------------
-
-## The limma package will be used for analysis
+```{r, results='hide', message=FALSE}
+# Bioconductor packages.
+# If you haven't installed already, use the instructions above, i.e.:
+# source("http://bioconductor.org/biocLite.R")
+# biocLite("Biobase")
+# biocLite("GEOquery")
+# ...etc.
+library(Biobase)
+library(GEOquery)
 library(limma)
-
-## Make the design and contrasts matrix
-pData(eset)
-design <- model.matrix(~0+condition, data=pData(eset))
-design
-class(design)
-colnames(design)
-colnames(design) <- c("cancer", "healthy")
-design
-colnames(design) <- sub("condition", "", colnames(design))
-design
-
-## make contrast matrix
-contrast.matrix <- makeContrasts(cancer_v_healthy=cancer-healthy, levels=design)
-contrast.matrix
-
-## Fit model
-fit <- lmFit(eset,design)
-fit <- contrasts.fit(fit, contrast.matrix)
-fit <- eBayes(fit)
-class(fit)
-
-## Get statistics from that model fit
-topTable(fit)
-?topTable
-nrow(fit)
-tt <- topTable(fit, number=nrow(fit))
-
-head(tt)
-class(tt)
-dim(tt)
-
-## First, write the entire results table to a csv file and open in Excel
-## Assignment: how many genes are significant at an adjusted p-value of 0.005?
-## Write this table to a CSV file and open it in excel
-write.csv(tt, file="diffexpr-all.csv")
-sig <- subset(tt, adj.P.Val<0.005)
-dim(sig)
-write.csv(sig, file="diffexpr-significant.csv")
-
-## volcano plot
-with(tt, plot(logFC, -log10(adj.P.Val), pch=16, col="black"))
-
-## heatmap
-heatmap(exprs(eset[featureNames(eset) %in% sig$ID, ]))
-
-library(GOstats)
-library(Category)
-?hyperGTest
-?"GOHyperGParams-class"
-myuniverse <- tt$Entrez
-mysiggenes <- sig$Entrez
-myanno <- annotation(eset)
-
-?"KEGGHyperGParams-class"
-library(KEGG.db)
-KEGGparams <- new("KEGGHyperGParams", geneIds=mysiggenes, universeGeneIds=myuniverse, annotation=myanno, testDirection="over", pvalueCutoff=.05)
-KEGGres <- hyperGTest(KEGGparams)
-KEGGres
-class(KEGGres)
-?"KEGGHyperGResult-class"
-?"HyperGResult-accessors"
-summary(KEGGres)
-htmlReport(KEGGres, file="KEGG report.html")
-
-?"GOHyperGParams-class"
-library(GO.db)
-GOparams <- new("GOHyperGParams", geneIds=mysiggenes, universeGeneIds=myuniverse, annotation=myanno, conditional=TRUE, ontology="MF")
-GOres <- hyperGTest(GOparams)
-htmlReport(GOres, file="GO MF terms.html")
 ```
+
+Next, let's get the data and verify that it's an [ExpressionSet](http://bioconductor.org/packages/release/bioc/vignettes/Biobase/inst/doc/ExpressionSetIntroduction.pdf)-class object.
+
+```{r, results='hide'}
+gset <- getGEO("GSE25724", GSEMatrix =TRUE, destdir=".", AnnotGPL=TRUE)
+gset <- gset[[1]]
+class(gset)
+```
+
+Next we'll fix the names of the variables describing the features (probes) on the array. The variable names are non-standard, having things like spaces (e.g. `"Gene title"`) and colons (e.g. `"GO:Function"`), which can cause problems downstream. The `make.names()` function makes syntactically valid names out of character vectors.
+
+```{r, results='hide'}
+# Removes spaces, colons, other weird symbols, inserts "." instead.
+fvarLabels(gset) <- make.names(fvarLabels(gset))
+```
+
+Next, let's take a look at the sample metadata. We can see that the first seven samples are non-diabetic islets and the last six are diabetic. Let's create a `condition` variable that indicates the disease state of each sample, and annotate the dataset's description with this new condition variable.
+
+```{r, results='hide'}
+# group names for all samples
+View(pData(gset))
+rep("ctrl", 7)
+rep("diab", 6)
+condition <- c(rep("ctrl", 7), rep("diab", 6))
+condition <- as.factor(condition)
+gset$description <- condition
+```
+
+Before we do any analysis, let's do some quality control using the [arrayQualityMetrics](http://www.bioconductor.org/packages/release/bioc/html/arrayQualityMetrics.html) Bioconductor package. Note that this can take some time.
+
+```{r, eval=FALSE}
+
+```
+
+library(arrayQualityMetrics)
+arrayQualityMetrics(gset, outdir="aqm-report", intgroup="description")

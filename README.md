@@ -1,17 +1,45 @@
 # Introduction to R for Life Scientists
 
-* EDIT: Insert information about course.
-* EDIT: Link to slides (<http://stephenturner.us/slides>)
-* EDIT: Information about setup (Rstudio, packages, etc.)
+This workshop is directed toward life scientists with little to no experience with statistical computing or bioinformatics. This interactive workshop will introduce the R statistical computing environment, including basic instruction in data types, variables, array manipulation, functions, data frames, data import/export, visualization, and using packages. At the end of the workshop, participants will see a live demonstration of a real biomedical application - analysis of publicly available gene expression microarray data. This will demo (1) how to search for and acquire publicly accessible data from NCBI Gene Expression Omnibus, and (2) how to use Bioconductor packages to import, process, QC, analyze, and visualize the results of the analysis. By the end of the workshop, participants will be able to use R for basic data manipulation and visualization, and will know where to look for further help and instruction. Participants will also be exposed to downloading and analyzing publicly available gene expression data. An advanced follow-on course will go through a gene expression data analysis in detail. 
+
+Link to slides: *coming soon.*
+
+## Before coming
+
+Prior to the workshop, please download the software as below and take the pre-workshop survey.
+
+### Software setup
+
+0. Download and install R for [Mac OS X](http://cran.rstudio.com/bin/macosx/R-3.0.2.pkg) or [Windows](http://cran.rstudio.com/bin/windows/base/R-3.0.2-win.exe)
+0. Download and install RStudio Desktop: <http://www.rstudio.com/ide/download/desktop>.
+0. Run RStudio, and enter the following commands into the "Console" window (usually the lower-right, by default). This will download and install necessary add-on packages we will use in class.
+
+
+```r
+install.packages("ggplot2")
+
+source("http://bioconductor.org/biocLite.R")
+biocLite()
+biocLite("Biobase")
+biocLite("GEOquery")
+biocLite("limma")
+```
+
+
+### Take the pre-workshop survey
+
+Please complete [this very short survey](https://docs.google.com/forms/d/1Ef4r-5yTOZO-rMGyjZ5M-wP3Q_j2WPtkp1HM_ksApnw/viewform) (it should take you less than 60 seconds). 
 
 ## R basics
+
+The first part of this workshop will demonstrate very basic functionality in r, including functions, functions, vectors, creating variables, getting help, subsetting, data frames, plotting, and reading/writing files.
 
 ### Basic operations
 
 R can be used as a glorified calculator. Try typing this in directly into the console. Then start typing this into the editor, and save your script. Use the run button, or press `CMD`+`Enter` (`Ctrl`+`Enter` on Windows).
 
 
-```coffee
+```r
 2 + 2
 5 * 4
 2^3
@@ -21,7 +49,7 @@ R can be used as a glorified calculator. Try typing this in directly into the co
 R Knows order of operations.
 
 
-```coffee
+```r
 2 + 3 * 4/(5 + 3) * 15/2^2 + 3 * 4^2
 ```
 
@@ -31,7 +59,7 @@ R Knows order of operations.
 R has built-in functions.
 
 
-```coffee
+```r
 # Notice that this is a comment.  Anything behind a # is 'commented out' and
 # is not run.
 sqrt(144)
@@ -48,7 +76,7 @@ Get help by typing a question mark in front of the function's name:
 Note syntax highlighting when typing this into the editor. Also note how we pass *arguments* to functions. Finally, see how you can *next* one function inside of another (here taking the square root of the log-base-10 of 1000).
 
 
-```coffee
+```r
 log(1000)
 log(1000, base = 10)
 sqrt(log(1000, base = 10))
@@ -60,7 +88,7 @@ sqrt(log(1000, base = 10))
 Let's create some numeric vectors. Vectors (aka "arrays" in Perl, "lists" in Python) are single *objects* containing an ordered collection of *elements*. A simple vector is a numeric vector, a single *object* containing several numbers. Here let's display a few vectors. We can also do vector arithmetic. When printing vectors to the screen that have lots of elements, notice that the bracketed number in the gutter of the output is just a counter indexing the number of elements in the vector.
 
 
-```coffee
+```r
 # Some simple numeric vectors:
 1:5
 6:10
@@ -80,7 +108,7 @@ seq(from = 2, to = 200, by = 4)
 You can store values in a variable or object. Use the `<-` operator for assignment. `=` also will work, but `<-` is conventional and preferred. Objects should start with a letter and can include numbers and underscores. Named variables are objects containing whatever is assigned to them. Remember, *everything is an object*.
 
 
-```coffee
+```r
 x <- 5
 x
 
@@ -104,7 +132,7 @@ x^y
 You can see what objects (variables) are stored by viewing the Environment tab in Rstudio. You can also use the `ls()` function. You can remove objects (variables) with the `rm()` function. You can do this one at a time or remove several objects at once.
 
 
-```coffee
+```r
 ls()
 rm(x)
 ls()
@@ -115,7 +143,7 @@ x  # oops! you should get an error because x no longer exists!
 ## Error: object 'x' not found
 ```
 
-```coffee
+```r
 rm(y, z)
 ```
 
@@ -125,7 +153,7 @@ rm(y, z)
 Use the `class()` function to see what *kind* of object a something is. You can run `class()` on constants, built-in objects, or objects you create. Let's create a character object and then get it's class. 
 
 
-```coffee
+```r
 class(42)
 class(log)
 name <- "Stephen"
@@ -137,7 +165,7 @@ class(name)
 Certain *functions* operate only on certain *classes* of object. Here, `name` is a `character` class, assigned to `"Stephen"`. The built-in `toupper()` function will operate on character objects, but not others. 
 
 
-```coffee
+```r
 toupper(name)  # name is an object of class character. methods or functions are associated with certain classes.
 ```
 
@@ -145,7 +173,7 @@ toupper(name)  # name is an object of class character. methods or functions are 
 ## [1] "STEPHEN"
 ```
 
-```coffee
+```r
 toupper(log)  # can't run a function that expects character on an object of class function
 ```
 
@@ -157,7 +185,7 @@ toupper(log)  # can't run a function that expects character on an object of clas
 We can combine values into a vector with the built-in `c()` function.
 
 
-```coffee
+```r
 # Get some help with ?c
 x <- c(1, 3, 5)
 x
@@ -169,7 +197,7 @@ length(x)
 Let's create and manipulate a character vector:
 
 
-```coffee
+```r
 y <- c("My", "name", "is", "Stephen")
 y
 class(y)
@@ -183,7 +211,7 @@ length(y)
 Try running the built-in `sum()` function on a numeric vector:
 
 
-```coffee
+```r
 sum(x)
 ```
 
@@ -191,7 +219,7 @@ sum(x)
 Combining characters with numerics results in coercing everything to be a character class. 
 
 
-```coffee
+```r
 y
 z <- c(x, y)
 z
@@ -202,7 +230,7 @@ class(z)
 Certain functions only operate on certain classes. You can't compute the `sum()` of a character vector!
 
 
-```coffee
+```r
 z
 ```
 
@@ -211,7 +239,7 @@ z
 ## [8] "Turner"
 ```
 
-```coffee
+```r
 sum(z)
 ```
 
@@ -227,7 +255,7 @@ Let's create a vector of 50 integers going from 101 to 150. We can access certai
 *Special note: R indexes vectors starting at 1. This is different from many other languages, including Perl and Python, which index starting from zero.*
 
 
-```coffee
+```r
 # Create the vector.
 x <- 101:150
 
@@ -255,7 +283,7 @@ Later on we'll go over how we load our own data, but for now, let's use a built-
 Let's load the data first. Type the name of the object itself (`mtcars`) to view the entire data frame. *Note: doing this with large data frames can cause you trouble.*
 
 
-```coffee
+```r
 data(mtcars)
 class(mtcars)
 mtcars
@@ -270,7 +298,7 @@ There are several built-in functions that are useful for working with data frame
 * `summary()` works differently depending on what kind of object you pass to it. Passing a data frame to the `summary()` function prints out some summary statistics about each column (min, max, median, mean, etc.)
 
 
-```coffee
+```r
 head(mtcars)
 length(mtcars)
 dim(mtcars)
@@ -283,7 +311,7 @@ str(mtcars)
 We can access individual variables within a data frame using the `$` operator, e.g., `mydataframe$specificVariable`. Let's print out the number of cylinders for every car, and calculate the average miles per gallon for ever car in the dataset (using the built-in `mean()` function).
 
 
-```coffee
+```r
 # display the number of cylinders for each car.
 mtcars$cyl
 # first display MPG for all vehicles, then calculate the average.
@@ -295,7 +323,7 @@ mean(mtcars$mpg)
 We can also access certain rows or columns of a dataset by providing multiple indices using the syntax `mydataframe[rows, columns]`. Let's get the first 4 rows and the first two rows (MPG and # cylinders) from the dataset:
 
 
-```coffee
+```r
 head(mtcars)
 mtcars[1:4, 1:2]
 ```
@@ -314,7 +342,7 @@ The commands below will:
 Try some subsetting on your own.
 
 
-```coffee
+```r
 subset(mtcars, cyl == 6)
 subset(mtcars, cyl > 6)
 subset(mtcars, mpg >= 20 | disp < 100)
@@ -328,7 +356,7 @@ The `with()` function is particularly helpful. Let's say you wanted to compute s
 Try typing the following commands:
 
 
-```coffee
+```r
 # Display the number of cylinders.
 mtcars$cyl
 with(mtcars, cyl)
@@ -344,81 +372,81 @@ with(mtcars, mpg * cyl/disp)
 Plotting a single numeric variable goes down the rows and plots a value on the y-axis for each observation (index) in the data frame. 
 
 
-```coffee
+```r
 plot(mtcars$mpg)
 ```
 
-![plot of chunk unnamed-chunk-22](figure/unnamed-chunk-22.png) 
+![plot of chunk unnamed-chunk-23](figure/unnamed-chunk-23.png) 
 
 
 This isn't a very useful figure. More appropriate might be a histogram. We can try to let R decide how many breaks to insert in the histogram, or we can set that manually. We can also set the color of the bars. 
 
 
 
-```coffee
+```r
 hist(mtcars$mpg)
 ```
 
-![plot of chunk unnamed-chunk-23](figure/unnamed-chunk-231.png) 
+![plot of chunk unnamed-chunk-24](figure/unnamed-chunk-241.png) 
 
-```coffee
+```r
 hist(mtcars$mpg, breaks = 10)
 ```
 
-![plot of chunk unnamed-chunk-23](figure/unnamed-chunk-232.png) 
+![plot of chunk unnamed-chunk-24](figure/unnamed-chunk-242.png) 
 
-```coffee
+```r
 hist(mtcars$mpg, breaks = 10, col = "black")
 ```
 
-![plot of chunk unnamed-chunk-23](figure/unnamed-chunk-233.png) 
+![plot of chunk unnamed-chunk-24](figure/unnamed-chunk-243.png) 
 
 
 We can create a scatterplot between two variables with `plot(varX, varY)`.
 
 
-```coffee
+```r
 # This would also work, but let's use with().  plot(mtcars$disp, mtcars$mpg)
 with(mtcars, plot(disp, mpg))
 ```
 
-![plot of chunk unnamed-chunk-24](figure/unnamed-chunk-24.png) 
+![plot of chunk unnamed-chunk-25](figure/unnamed-chunk-25.png) 
 
 
 There are hundreds of plotting parameters you can use to make your plot look exactly like you want. Let's use a solid-filled point instead of an open circle with the `pch=` argument, color the points red with the `col=` argument, give it a title by passing a character object to the `main=` argument, and change the x and y axis titles with the `xlab=` and `ylab=` arguments, respectively. Let's go through this one step at a time. 
 
 
-```coffee
+```r
 with(mtcars, plot(disp, mpg, pch = 16))
 ```
 
-![plot of chunk unnamed-chunk-25](figure/unnamed-chunk-251.png) 
+![plot of chunk unnamed-chunk-26](figure/unnamed-chunk-261.png) 
 
-```coffee
+```r
 with(mtcars, plot(disp, mpg, pch = 16, col = "red"))
 ```
 
-![plot of chunk unnamed-chunk-25](figure/unnamed-chunk-252.png) 
+![plot of chunk unnamed-chunk-26](figure/unnamed-chunk-262.png) 
 
-```coffee
+```r
 with(mtcars, plot(disp, mpg, pch = 16, col = "red", main = "MPG vs Displacement"))
 ```
 
-![plot of chunk unnamed-chunk-25](figure/unnamed-chunk-253.png) 
+![plot of chunk unnamed-chunk-26](figure/unnamed-chunk-263.png) 
 
-```coffee
+```r
 with(mtcars, plot(disp, mpg, pch = 16, col = "red", main = "MPG vs Displacement", 
     ylab = "Fuel Economy (MPG)", xlab = "Displacement (cu. in.)"))
 ```
 
-![plot of chunk unnamed-chunk-25](figure/unnamed-chunk-254.png) 
+![plot of chunk unnamed-chunk-26](figure/unnamed-chunk-264.png) 
 
 
 Notice how on that last line I broke the command up into two lines for better readability. I broke the command at the comma separating arguments, and indented the following line for readability.
 
 On your own, try plotting horsepower vs displacement for vehicles with more than 4 cylinders. Give the graph a title and label the axes. Make the points solid (hint, `pch=16`) blue (hint, `col="blue"`) circles. Your plot should look something like this:
 
-![plot of chunk unnamed-chunk-26](figure/unnamed-chunk-26.png) 
+![plot of chunk unnamed-chunk-27](figure/unnamed-chunk-27.png) 
 
 
 ### Reading in / writing out data
@@ -426,7 +454,7 @@ On your own, try plotting horsepower vs displacement for vehicles with more than
 First, lets create a small dataset consisting of only 8 cylinder cars. 
 
 
-```coffee
+```r
 mtcars_8cyl <- subset(mtcars, cyl == 8)
 mtcars_8cyl
 ```
@@ -443,7 +471,7 @@ getwd()
 Using RStudio, go to the Session menu, and select the directory (folder) you want to work from under the "Set Working Directory" menu. You can also do this manually with the `setwd()` command. 
 
 
-```coffee
+```r
 getwd()
 setwd("/Users/sdt5z/Desktop/R")
 ```
@@ -452,7 +480,7 @@ setwd("/Users/sdt5z/Desktop/R")
 Once you've set your working directory either using RStudio or on the command line, save the new reduced data frame to a comma-separated file called `cars8.csv` using the `write.csv()` function. 
 
 
-```coffee
+```r
 write.csv(mtcars_8cyl, file = "cars8.csv")
 ```
 
@@ -467,7 +495,7 @@ Data can be loaded using the Tools -- Import Dataset -- From text file menu in R
 Here let's remove the dataset, and re-import it into an object called cars8 from the file we just saved.
 
 
-```coffee
+```r
 rm(mtcars_8cyl)
 mtcars_8cyl
 cars8 <- read.table(file = "cars8.csv", header = TRUE, sep = ",", row.names = 1)
@@ -487,7 +515,7 @@ In this section we'll analyze some publicly available gene expression data using
 Most generic R packages are hosted on the Comprehensive R Archive Network (CRAN, <http://cran.us.r-project.org/>). To install one of these packages, you would use `install.packages("packagename")`. You only need to install a package once, then load it each time using `library(packagename)`. Let's install the `ggplot2` package, and load it.
 
 
-```coffee
+```r
 # Install only once.
 install.packages("ggplot2")
 
@@ -501,12 +529,13 @@ library(ggplot2)
 Bioconductor packages work a bit different, and are not hosted on CRAN. Go to <http://bioconductor.org/> to learn more about the Bioconductor project. To use any Bioconductor package, you'll need a few "core" Bioconductor packages. Run the following commands to (1) download the installer script, and (2) install some core Bioconductor packages. You'll need internet connectivity to do this, and it'll take a few minutes, but it only needs to be done once.
 
 
-```coffee
+```r
 # Download the installer script
 source("http://bioconductor.org/biocLite.R")
 
-# biocLite() is the bioconductor installer function.  run it without any
+# biocLite() is the bioconductor installer function.  Run it without any
 # arguments to install the core packages or update any installed packages.
+# This requires internet connectivity and will take some time!
 biocLite()
 ```
 
@@ -514,7 +543,7 @@ biocLite()
 To install specific packages, first download the installer script if you haven't done so, and use `biocLite("packagename")`. This only needs to be done once then you can load the package like any other package. Let's download the [limma package](http://www.bioconductor.org/packages/release/bioc/html/limma.html): 
 
 
-```coffee
+```r
 # Do only once
 source("http://bioconductor.org/biocLite.R")
 biocLite("limma")
@@ -525,6 +554,24 @@ library(limma)
 
 
 Bioconductor packages usually have great documentation in the form of *vignettes*. For a great example, take a look at the [limma user's guide](http://www.bioconductor.org/packages/release/bioc/vignettes/limma/inst/doc/usersguide.pdf). 
+
+### Analyzing publicly available microarray data.
+
+Now, let's analyze some publicly available gene expression microarray data. NCBI Gene Expression Omnibus (<http://www.ncbi.nlm.nih.gov/geo/>) is an international public repository that archives and freely distributes microarray, next-generation sequencing, and other forms of high-throughput functional genomics data submitted by the research community. Many publishers require gene expression data be submitted to GEO and made publicly available before publication. You can learn a lot more about GEO by reading their [overview](http://www.ncbi.nlm.nih.gov/geo/info/overview.html) and [FAQ](http://www.ncbi.nlm.nih.gov/geo/info/faq.html) pages. At the time of this writing, GEO hosts over 45,000 studies comprising over 1,000,000 samples on over 10,000 different technology platforms.
+
+In this demonstration, we're going to be using data from GEO Series accession number GSE25724. You can enter this number in the search box on the GEO homepage, or use [this direct link](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE25724). In this study, the authors performed microarray analysis to evaluate differences in the transcriptome of type 2 diabetic human islets compared to non-diabetic islet samples. Human pancreatic islets were isolated from the pancreas of organ donors by collagenase digestion followed by density gradient purification, then hand-picked and cultured two days in M199 culture medium. Seven non-diabetic islet samples and six diabetic islet samples were hybridized to the Affymetrix GeneChip Human Genome U133A microarray.
+
+First, we'll need to load the Bioconductor packages we'll be using:
+
+
+```r
+library(Biobase)
+library(GEOquery)
+library(limma)
+```
+
+
+
 
 
 
