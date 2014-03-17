@@ -10,7 +10,7 @@ Prior to the workshop, please download the software as below and take the pre-wo
 
 ### Software setup
 
-0. Download and install R for [Mac OS X](http://cran.rstudio.com/bin/macosx/R-3.0.2.pkg) or [Windows](http://cran.rstudio.com/bin/windows/base/R-3.0.2-win.exe)
+0. Download and install R for [Mac OS X](http://cran.rstudio.com/bin/macosx/R-3.0.3.pkg) or [Windows](http://cran.rstudio.com/bin/windows/base/R-3.0.3-win.exe)
 0. Download and install RStudio Desktop: <http://www.rstudio.com/ide/download/desktop>.
 0. Run RStudio, and enter the following commands into the "Console" window (usually the lower-right, by default). This will download and install necessary add-on packages we will use in class.
 
