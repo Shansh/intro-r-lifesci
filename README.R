@@ -1,31 +1,38 @@
 
+## ----, echo=FALSE, message=FALSE, eval=TRUE------------------------------
+# Set eval=TRUE to hide all results and figures.
+# This sets defaults. Can change this manually in individual chunks.
+# Must load knitr so opts_chunk is in search path.
+library(knitr)
+opts_chunk$set(results="hide", message=FALSE, fig.show="hide", fig.keep="none")
+
+
 ## ----, eval=FALSE--------------------------------------------------------
 ## source("http://bioconductor.org/biocLite.R")
 ## biocLite()
 ## biocLite("Biobase")
-## biocLite("GEOquery")
-## biocLite("limma")
-## biocLite("arrayQualityMetrics")
+## biocLite("DESeq2")
+## biocLite("pasilla")
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 2+2
 5*4
 2^3
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 2+3*4/(5+3)*15/2^2+3*4^2
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 # Notice that this is a comment. 
 # Anything behind a # is "commented out" and is not run.
 sqrt(144)
 log(1000)
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 log(1000)
 log(1000, base=10)
 sqrt(log(1000, base=10))
@@ -44,7 +51,7 @@ sqrt(log(1000, base=10))
 ## seq(from=2, to=200, by=4)
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 x <- 5
 x
 
@@ -64,7 +71,7 @@ x*y
 x^y
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 ls()
 rm(x)
 ls()
@@ -72,7 +79,7 @@ x # oops! you should get an error because x no longer exists!
 rm(y,z)
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 class(42)
 class(log)
 name <- "Stephen"
@@ -85,7 +92,7 @@ toupper(name) # name is an object of class character. methods or functions are a
 toupper(log) # can't run a function that expects character on an object of class function
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 # Get some help with ?c
 x <- c(1,3,5)
 x
@@ -93,7 +100,7 @@ class(x)
 length(x)
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 y <- c("My", "name", "is", "Stephen")
 y
 class(y)
@@ -103,11 +110,11 @@ y
 length(y)
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 sum(x)
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 y
 z <- c(x,y)
 z 
@@ -119,7 +126,7 @@ z
 sum(z)
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 # Create the vector.
 x <- 101:150
 
@@ -137,13 +144,13 @@ x[20:25]
 x[45:55] #NA is missing value!
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 data(mtcars)
 class(mtcars)
 mtcars
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 head(mtcars)
 length(mtcars)
 dim(mtcars)
@@ -152,7 +159,7 @@ dim(mtcars)[2] # number of columns (number of variables measured)
 str(mtcars)
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 # display the number of cylinders for each car. 
 mtcars$cyl
 # first display MPG for all vehicles, then calculate the average.
@@ -160,12 +167,12 @@ mtcars$mpg
 mean(mtcars$mpg)
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 head(mtcars)
 mtcars[1:4, 1:2]
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 subset(mtcars, cyl==6)
 subset(mtcars, cyl>6)
 subset(mtcars, mpg>=20 | disp<100)
@@ -173,7 +180,7 @@ subset(mtcars, cyl==6, select=c(mpg, disp))
 subset(mtcars, cyl>=6 & mpg>=15, select=c(mpg, cyl, qsec))
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 # Display the number of cylinders.
 mtcars$cyl
 with(mtcars, cyl)
@@ -213,7 +220,7 @@ with(subset(mtcars, cyl>4), plot(disp, hp, pch=16, col="blue",
                                  main="Horsepower vs Displacement for 6 and 8-cylinder vehicles"))
 
 
-## ----, results='hide'----------------------------------------------------
+## ------------------------------------------------------------------------
 mtcars_8cyl <- subset(mtcars, cyl==8)
 mtcars_8cyl
 
@@ -269,73 +276,76 @@ mtcars_8cyl
 ## ----, eval=FALSE--------------------------------------------------------
 ## # Do only once
 ## source("http://bioconductor.org/biocLite.R")
-## biocLite("limma")
+## biocLite("DESeq2")
 ## 
-## # Every time you need to use the limma package
-## library(limma)
+## # Every time you need to use the DESeq2 package
+## library(DESeq2)
 
 
-## ----, message=FALSE-----------------------------------------------------
+## ----savedata, eval=FALSE, echo=FALSE------------------------------------
+## # This chunk only run for creating the data for class.
+## library(pasilla)
+## data(pasillaGenes)
+## write.csv(counts(pasillaGenes), file="pasilla_counts.csv")
+## write.csv(pData(pasillaGenes)[, c("condition", "type")], file="pasilla_metadata.csv")
+
+
+## ------------------------------------------------------------------------
 # Bioconductor packages.
 # Use the installation instructions at http://www.bioconductor.org/install/
 # if you haven't already installed these (install once, load every time)
 library(Biobase)
-library(GEOquery)
-library(limma)
-library(arrayQualityMetrics)
-
-
-## ----, eval=FALSE--------------------------------------------------------
-## gset <- getGEO("GSE25724", GSEMatrix =TRUE, destdir=".", AnnotGPL=TRUE)
-## gset <- gset[[1]]
-## class(gset)
-
-
-## ----, eval=FALSE--------------------------------------------------------
-## # Removes spaces, colons, other weird symbols, inserts "." instead.
-## fvarLabels(gset) <- make.names(fvarLabels(gset))
-
-
-## ----, eval=FALSE--------------------------------------------------------
-## # group names for all samples
-## View(pData(gset))
-## rep("ctrl", 7)
-## rep("diab", 6)
-## condition <- c(rep("ctrl", 7), rep("diab", 6))
-## condition <- as.factor(condition)
-## gset$description <- condition
-
-
-## ----, eval=FALSE--------------------------------------------------------
-## arrayQualityMetrics(gset, outdir="aqm-report", intgroup="description")
-
-
-## ----, eval=FALSE--------------------------------------------------------
-## # Set up and view the design matrix
-## design <- model.matrix(~ description + 0, data=gset)
-## colnames(design) <- levels(condition)
-## design
-## 
-## # Set up and view the contrast matrix
-## cont.matrix <- makeContrasts(diab-ctrl, levels=design)
-## cont.matrix
-## 
-## # Fit a linear model, compute contrast coefficients and std errs, moderated t-tests and p-values:
-## fit <- lmFit(gset, design)
-## fit <- contrasts.fit(fit, cont.matrix)
-## fit <- eBayes(fit, proportion=0.01)
-## 
-## # Extract the top 250 most differentially expressed genes, with an FDR correction
-## tt  <- topTable(fit, adjust="fdr", sort.by="p", number=250)
-## 
-## # Look at the results in RStudio
-## View(tt)
-## 
-## # Export the results to file
-## write.table(tt, file='top-250-genes.csv', row.names=F, sep=",")
+library(DESeq2)
 
 
 ## ------------------------------------------------------------------------
+# Load the count data
+pasillacounts <- read.csv("data/pasilla_counts.csv", header=TRUE, row.names=1)
+head(pasillacounts)
+
+# Load the sample metadata
+pasillameta <- read.csv("data/pasilla_metadata.csv", header=TRUE, row.names=1)
+pasillameta
+
+
+## ------------------------------------------------------------------------
+dds <- DESeqDataSetFromMatrix(countData=pasillacounts, colData=pasillameta, design = ~condition)
+dds
+
+
+## ----rundeseq------------------------------------------------------------
+# Normalize, estimate dispersion, fit model
+dds <- DESeq(dds)
+
+
+## ----results_simpledesign, fig.keep='all', fig.show='asis'---------------
+# Extract results
+res <- results(dds)
+
+# View, reorder, and write out results
+head(res)
+mcols(res)
+res <- res[order(res$padj), ]
+head(res)
+write.csv(res, file="results/pasilla_results.csv")
+
+# Create MA Plot
+plotMA(dds, ylim=c(-2,2))
+
+
+## ----viz, fig.keep='all', fig.show='asis'--------------------------------
+# Transform
+rld <- rlogTransformation(dds, blind=TRUE)
+
+# Principal components analysis
+plotPCA(rld, intgroup=c("condition", "type"))
+
+# Hierarchical clustering analysis
+distrl <- dist(t(assay(rld)))
+plot(hclust(distrl))
+
+
+## ----sessioninfo---------------------------------------------------------
 sessionInfo()
 
 
