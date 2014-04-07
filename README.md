@@ -1,5 +1,8 @@
 # Introduction to R for Life Scientists
 
+
+
+
 This workshop is directed toward life scientists with little to no experience with statistical computing or bioinformatics. This interactive workshop will introduce the R statistical computing environment, including basic instruction in data types, variables, array manipulation, functions, data frames, data import/export, visualization, and using packages. At the end of the workshop, participants will see a live demonstration of a real biomedical application - analysis of publicly available gene expression microarray data. This will demo (1) how to search for and acquire publicly accessible data from NCBI Gene Expression Omnibus, and (2) how to use Bioconductor packages to import, process, QC, analyze, and visualize the results of the analysis. By the end of the workshop, participants will be able to use R for basic data manipulation and visualization, and will know where to look for further help and instruction. Participants will also be exposed to downloading and analyzing publicly available gene expression data. An advanced follow-on course will go through a gene expression data analysis in detail. 
 
 Link to slides: *coming soon.*
@@ -19,9 +22,8 @@ Prior to the workshop, please download the software as below and take the pre-wo
 source("http://bioconductor.org/biocLite.R")
 biocLite()
 biocLite("Biobase")
-biocLite("GEOquery")
-biocLite("limma")
-biocLite("arrayQualityMetrics")
+biocLite("DESeq2")
+biocLite("pasilla")
 ```
 
 
@@ -167,13 +169,6 @@ Certain *functions* operate only on certain *classes* of object. Here, `name` is
 
 ```coffee
 toupper(name)  # name is an object of class character. methods or functions are associated with certain classes.
-```
-
-```
-## [1] "STEPHEN"
-```
-
-```coffee
 toupper(log)  # can't run a function that expects character on an object of class function
 ```
 
@@ -232,14 +227,6 @@ Certain functions only operate on certain classes. You can't compute the `sum()`
 
 ```coffee
 z
-```
-
-```
-## [1] "1"       "3"       "5"       "My"      "name"    "is"      "Stephen"
-## [8] "Turner"
-```
-
-```coffee
 sum(z)
 ```
 
@@ -376,8 +363,6 @@ Plotting a single numeric variable goes down the rows and plots a value on the y
 plot(mtcars$mpg)
 ```
 
-![plot of chunk unnamed-chunk-23](figure/unnamed-chunk-23.png) 
-
 
 This isn't a very useful figure. More appropriate might be a histogram. We can try to let R decide how many breaks to insert in the histogram, or we can set that manually. We can also set the color of the bars. 
 
@@ -385,21 +370,9 @@ This isn't a very useful figure. More appropriate might be a histogram. We can t
 
 ```coffee
 hist(mtcars$mpg)
-```
-
-![plot of chunk unnamed-chunk-24](figure/unnamed-chunk-241.png) 
-
-```coffee
 hist(mtcars$mpg, breaks = 10)
-```
-
-![plot of chunk unnamed-chunk-24](figure/unnamed-chunk-242.png) 
-
-```coffee
 hist(mtcars$mpg, breaks = 10, col = "black")
 ```
-
-![plot of chunk unnamed-chunk-24](figure/unnamed-chunk-243.png) 
 
 
 We can create a scatterplot between two variables with `plot(varX, varY)`.
@@ -410,43 +383,24 @@ We can create a scatterplot between two variables with `plot(varX, varY)`.
 with(mtcars, plot(disp, mpg))
 ```
 
-![plot of chunk unnamed-chunk-25](figure/unnamed-chunk-25.png) 
-
 
 There are hundreds of plotting parameters you can use to make your plot look exactly like you want. Let's use a solid-filled point instead of an open circle with the `pch=` argument, color the points red with the `col=` argument, give it a title by passing a character object to the `main=` argument, and change the x and y axis titles with the `xlab=` and `ylab=` arguments, respectively. Let's go through this one step at a time. 
 
 
 ```coffee
 with(mtcars, plot(disp, mpg, pch = 16))
-```
-
-![plot of chunk unnamed-chunk-26](figure/unnamed-chunk-261.png) 
-
-```coffee
 with(mtcars, plot(disp, mpg, pch = 16, col = "red"))
-```
-
-![plot of chunk unnamed-chunk-26](figure/unnamed-chunk-262.png) 
-
-```coffee
 with(mtcars, plot(disp, mpg, pch = 16, col = "red", main = "MPG vs Displacement"))
-```
-
-![plot of chunk unnamed-chunk-26](figure/unnamed-chunk-263.png) 
-
-```coffee
 with(mtcars, plot(disp, mpg, pch = 16, col = "red", main = "MPG vs Displacement", 
     ylab = "Fuel Economy (MPG)", xlab = "Displacement (cu. in.)"))
 ```
-
-![plot of chunk unnamed-chunk-26](figure/unnamed-chunk-264.png) 
 
 
 Notice how on that last line I broke the command up into two lines for better readability. I broke the command at the comma separating arguments, and indented the following line for readability.
 
 On your own, try plotting horsepower vs displacement for vehicles with more than 4 cylinders. Give the graph a title and label the axes. Make the points solid (hint, `pch=16`) blue (hint, `col="blue"`) circles. Your plot should look something like this:
 
-![plot of chunk unnamed-chunk-27](figure/unnamed-chunk-27.png) 
+
 
 
 ### Reading in / writing out data
@@ -544,28 +498,33 @@ biocLite()
 ```
 
 
-To install specific packages, first download the installer script if you haven't done so, and use `biocLite("packagename")`. This only needs to be done once then you can load the package like any other package. Let's download the [limma package](http://www.bioconductor.org/packages/release/bioc/html/limma.html): 
+To install specific packages, first download the installer script if you haven't done so, and use `biocLite("packagename")`. This only needs to be done once then you can load the package like any other package. Let's download the [DESeq2 package](http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html): 
 
 
 ```coffee
 # Do only once
 source("http://bioconductor.org/biocLite.R")
-biocLite("limma")
+biocLite("DESeq2")
 
-# Every time you need to use the limma package
-library(limma)
+# Every time you need to use the DESeq2 package
+library(DESeq2)
 ```
 
 
-Bioconductor packages usually have great documentation in the form of *vignettes*. For a great example, take a look at the [limma user's guide](http://www.bioconductor.org/packages/release/bioc/vignettes/limma/inst/doc/usersguide.pdf). 
+Bioconductor packages usually have great documentation in the form of *vignettes*. For a great example, take a look at the [DESeq2 vignette for analyzing count data](http://www.bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.pdf). 
 
-### Analyzing publicly available microarray data
 
-Now, let's analyze some publicly available gene expression microarray data. NCBI Gene Expression Omnibus (<http://www.ncbi.nlm.nih.gov/geo/>) is an international public repository that archives and freely distributes microarray, next-generation sequencing, and other forms of high-throughput functional genomics data submitted by the research community. Many publishers require gene expression data be submitted to GEO and made publicly available before publication. You can learn a lot more about GEO by reading their [overview](http://www.ncbi.nlm.nih.gov/geo/info/overview.html) and [FAQ](http://www.ncbi.nlm.nih.gov/geo/info/faq.html) pages. At the time of this writing, GEO hosts over 45,000 studies comprising over 1,000,000 samples on over 10,000 different technology platforms.
 
-In this demonstration, we're going to be using data from GEO Series accession number GSE25724. You can enter this number in the search box on the GEO homepage, or use [this direct link](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE25724). In this study, the authors performed microarray analysis to evaluate differences in the transcriptome of type 2 diabetic human islets compared to non-diabetic islet samples. Human pancreatic islets were isolated from the pancreas of organ donors by collagenase digestion followed by density gradient purification, then hand-picked and cultured two days in M199 culture medium. Seven non-diabetic islet samples and six diabetic islet samples were hybridized to the Affymetrix GeneChip Human Genome U133A microarray. The results were published in: Dominguez V, et al. Class II phosphoinositide 3-kinase regulates exocytosis of insulin granules in pancreatic beta cells. *J Biol Chem 2011* Feb 11;286(6):4216-25. PMID: [21127054](http://www.ncbi.nlm.nih.gov/pubmed/21127054). 
 
-You can go to the [GEO accession page](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE25724) and download the raw .CEL file data directly (at the very bottom, under "Supplementary file"). However, we are going to use a Bioconductor package called [GEOquery](http://www.bioconductor.org/packages/release/bioc/html/GEOquery.html) that allows us to *programmatically* access all data in GEO from within R. Take a look at the [GEOquery vignette](http://www.bioconductor.org/packages/release/bioc/vignettes/GEOquery/inst/doc/GEOquery.pdf) or Google around for "GEOquery tutorial" to learn more.
+### Analyzing publicly available RNA-seq data
+
+Now, let's analyze some publicly available gene expression (RNA-seq) data. NCBI Gene Expression Omnibus (<http://www.ncbi.nlm.nih.gov/geo/>) is an international public repository that archives and freely distributes microarray, next-generation sequencing, and other forms of high-throughput functional genomics data submitted by the research community. Many publishers require gene expression data be submitted to GEO and made publicly available before publication. You can learn a lot more about GEO by reading their [overview](http://www.ncbi.nlm.nih.gov/geo/info/overview.html) and [FAQ](http://www.ncbi.nlm.nih.gov/geo/info/faq.html) pages. At the time of this writing, GEO hosts over 45,000 studies comprising over 1,000,000 samples on over 10,000 different technology platforms.
+
+In this demonstration, we're going to be using data from GEO Series accession number GSE18508. You can enter this number in the search box on the GEO homepage, or use [this direct link](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE18508). In this study, the authors performed RNA-sequencing of mRNA from Drosophila melanogaster S2-DRSC cells that have been RNAi depleted of mRNAs encoding RNA binding proteins and splicing factors. This was done as part of the modENCODE project, published in: Brooks AN et al. Conservation of an RNA regulatory map between Drosophila and mammals. *Genome Res* 2011 Feb;21(2):193-202. 
+
+You can go to the [GEO accession page](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE18508) and download all the raw data at the bottom under supplementary data. However, this dataset is nearly 100GB. What I have in this repository is a spreadsheet containing a matrix of gene counts, where genes are in rows and samples are in columns. That is, this data has already been aligned and counted, and the number in the cell is the number of RNA-seq reads that mapped to that gene for that sample. The value in the *i*-th row and the *j*-th column of the matrix tells how many reads have been mapped to gene *i* in sample *j*.
+
+Note: much of this was adapted from the DESeq2 package vignette.
 
 #### Load packages
 
@@ -577,91 +536,96 @@ First, we'll need to load the Bioconductor packages we'll be using:
 # http://www.bioconductor.org/install/ if you haven't already installed
 # these (install once, load every time)
 library(Biobase)
-library(GEOquery)
-library(limma)
-library(arrayQualityMetrics)
+library(DESeq2)
 ```
 
 
-#### Acquire and pre-process the data
+#### Load the data
 
-Next, let's get the data and verify that it's an [ExpressionSet](http://bioconductor.org/packages/release/bioc/vignettes/Biobase/inst/doc/ExpressionSetIntroduction.pdf)-class object.
+Next, load two different datasets: one with the count data, and one with sample information. Take a look at the first few rows of the count dataset, as well as the entire metadata data frame.
 
 
 ```coffee
-gset <- getGEO("GSE25724", GSEMatrix = TRUE, destdir = ".", AnnotGPL = TRUE)
-gset <- gset[[1]]
-class(gset)
+# Load the count data
+pasillacounts <- read.csv("data/pasilla_counts.csv", header = TRUE, row.names = 1)
+head(pasillacounts)
+
+# Load the sample metadata
+pasillameta <- read.csv("data/pasilla_metadata.csv", header = TRUE, row.names = 1)
+pasillameta
 ```
 
 
-Next we'll fix the names of the variables describing the features (probes) on the array. The variable names are non-standard, having things like spaces (e.g. `"Gene title"`) and colons (e.g. `"GO:Function"`), which can cause problems downstream. The `make.names()` function makes syntactically valid names out of character vectors.
+The class used by the DESeq2 package to store the read counts is the **DESeqDataSet** class. This facilitates preparation steps andalso downstream exploration of results. A DESeqDataSet object must have an associated design formula. The design formula expresses the variables which will be used in modeling. The formula should be a tilde (~) followed by the variables with plus signs between them (it will be coerced into an formula if it is not already). An intercept is included, representing the base mean of counts. The design can be changed later, however then all differential analysis steps should be repeated, as the design formula is used to estimate the dispersions and to estimate the log2 fold changes of the model. Do do this, we run the `DESeqDataSetFromMatrix` function, giving it data frames containing the count matrix as well as the column (metadata) information, and the design formula.
 
 
 ```coffee
-# Removes spaces, colons, other weird symbols, inserts '.' instead.
-fvarLabels(gset) <- make.names(fvarLabels(gset))
-```
-
-
-Next, let's take a look at the sample metadata. We can see that the first seven samples are non-diabetic islets and the last six are diabetic. Let's create a `condition` variable that indicates the disease state of each sample, and annotate the dataset's description with this new condition variable.
-
-
-```coffee
-# group names for all samples
-View(pData(gset))
-rep("ctrl", 7)
-rep("diab", 6)
-condition <- c(rep("ctrl", 7), rep("diab", 6))
-condition <- as.factor(condition)
-gset$description <- condition
-```
-
-
-#### Quality assessment 
-
-Before we do any analysis, let's do some quality assessment using the [arrayQualityMetrics](http://www.bioconductor.org/packages/release/bioc/html/arrayQualityMetrics.html) Bioconductor package. Note that this can take a few minutes and a good deal of RAM for multiple samples. The `arrayQualityMetrics()` function produces a number of useful outputs in a tidy HTML report. Open up the index.html file produced in the output directory and look at the metadata overview, between-array comparisons (distance heatmap/dendrograms, PCA), array density distrubutions (boxplots and density plots), variance-mean dependence, and MA plots. The text below each figure in the QA report gives a description of each figure and what you should be seeing.
-
-
-```coffee
-arrayQualityMetrics(gset, outdir = "aqm-report", intgroup = "description")
+dds <- DESeqDataSetFromMatrix(countData = pasillacounts, colData = pasillameta, 
+    design = ~condition)
+dds
 ```
 
 
 #### Differential expression analysis
 
-Finally, we'll do some data analysis. Below I'm using the [limma](http://www.bioconductor.org/packages/release/bioc/html/limma.html) (linear models for microarray) Bioconductor package for the analysis. Here we have a very simple two-group comparison, but limma can handle very complex multi-factorial designs including time-series, paired samples, and nested interaction models, among others. 
-
-First we specify a *design matrix* which indicates the experimental condition of each sample. Then we specify a *contrast* matrix that indicates the exact comparisons we want to do between samples. For an experiment that's this simple we don't really need a contrast matrix since the contrast that we want to perform (diabetic vs non-diabetic) is implicit in the design, but we di it here anyway for clarity.
+The standard differential expression analysis steps are wrapped into a single function, `DESeq`. This convenience function normalizes the library, estimates dispersion, and performs a statistical test under the negative binomial model. 
 
 
 ```coffee
-# Set up and view the design matrix
-design <- model.matrix(~description + 0, data = gset)
-colnames(design) <- levels(condition)
-design
-
-# Set up and view the contrast matrix
-cont.matrix <- makeContrasts(diab - ctrl, levels = design)
-cont.matrix
-
-# Fit a linear model, compute contrast coefficients and std errs, moderated
-# t-tests and p-values:
-fit <- lmFit(gset, design)
-fit <- contrasts.fit(fit, cont.matrix)
-fit <- eBayes(fit, proportion = 0.01)
-
-# Extract the top 250 most differentially expressed genes, with an FDR
-# correction
-tt <- topTable(fit, adjust = "fdr", sort.by = "p", number = 250)
-
-# Look at the results in RStudio
-View(tt)
-
-# Export the results to file
-write.table(tt, file = "top-250-genes.csv", row.names = F, sep = ",")
+# Normalize, estimate dispersion, fit model
+dds <- DESeq(dds)
 ```
 
+
+The results are accessed using the function `results`. The `mcols` function gives you more information about what the columns in the results tell you. You can reorder and write the results to a file if you wish. Finally, you can create an MA-plot, showing the log2 fold change over the normalized counts for each gene, colored red if statistically significant (padj<0.1). 
+
+
+```coffee
+# Extract results
+res <- results(dds)
+
+# View, reorder, and write out results
+head(res)
+mcols(res)
+res <- res[order(res$padj), ]
+head(res)
+write.csv(res, file = "results/pasilla_results.csv")
+
+# Create MA Plot
+plotMA(dds, ylim = c(-2, 2))
+```
+
+![plot of chunk results_simpledesign](figure/results_simpledesign.png) 
+
+
+#### Data transformation and visualization
+
+The differential expression analysis above operates on the raw (normalized) count data. But for visualizing or clustering data as you would with a microarray experiment, you ned to work with transformed versions of the data. First, use a *regularlized log* transofmration while re-estimating the dispersion ignoring any information you have about the samples (`blind=TRUE`). Perform a principal components analysis and hierarchical clustering.
+
+
+```coffee
+# Transform
+rld <- rlogTransformation(dds, blind = TRUE)
+
+# Principal components analysis
+plotPCA(rld, intgroup = c("condition", "type"))
+```
+
+![plot of chunk viz](figure/viz1.png) 
+
+```coffee
+
+# Hierarchical clustering analysis
+distrl <- dist(t(assay(rld)))
+plot(hclust(distrl))
+```
+
+![plot of chunk viz](figure/viz2.png) 
+
+
+#### Multifactor design
+
+Coming soon.
 
 #### Record package and version info with `sessionInfo()`
 
@@ -671,38 +635,4 @@ The `sessionInfo()` prints version information about R and any attached packages
 ```coffee
 sessionInfo()
 ```
-
-```
-## R version 3.0.2 (2013-09-25)
-## Platform: x86_64-apple-darwin10.8.0 (64-bit)
-## 
-## locale:
-## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-## 
-## attached base packages:
-## [1] parallel  methods   stats     graphics  grDevices utils     datasets 
-## [8] base     
-## 
-## other attached packages:
-## [1] arrayQualityMetrics_3.18.0 limma_3.18.10             
-## [3] GEOquery_2.28.0            Biobase_2.22.0            
-## [5] BiocGenerics_0.8.0         BiocInstaller_1.12.0      
-## 
-## loaded via a namespace (and not attached):
-##  [1] affy_1.40.0           affyio_1.30.0         affyPLM_1.38.0       
-##  [4] annotate_1.40.0       AnnotationDbi_1.24.0  beadarray_2.12.0     
-##  [7] BeadDataPackR_1.14.0  Biostrings_2.30.1     Cairo_1.5-5          
-## [10] cluster_1.14.4        colorspace_1.2-4      DBI_0.2-7            
-## [13] evaluate_0.5.1        formatR_0.10          Formula_1.1-1        
-## [16] gcrma_2.34.0          genefilter_1.44.0     grid_3.0.2           
-## [19] Hmisc_3.14-1          hwriter_1.3           IRanges_1.20.6       
-## [22] knitr_1.5             lattice_0.20-24       latticeExtra_0.6-26  
-## [25] plyr_1.8              preprocessCore_1.24.0 RColorBrewer_1.0-5   
-## [28] RCurl_1.95-4.1        reshape2_1.2.2        RSQLite_0.11.4       
-## [31] setRNG_2011.11-2      splines_3.0.2         stats4_3.0.2         
-## [34] stringr_0.6.2         survival_2.37-7       SVGAnnotation_0.93-1 
-## [37] tools_3.0.2           vsn_3.30.0            XML_3.95-0.2         
-## [40] xtable_1.7-1          XVector_0.2.0         zlibbioc_1.8.0
-```
-
 

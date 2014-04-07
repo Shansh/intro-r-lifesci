@@ -1,11 +1,15 @@
-OUTS := $(patsubst %.Rmd,%.html,$(wildcard *.Rmd)) $(patsubst %.Rmd,%.md,$(wildcard *.Rmd))
+OUTS := $(patsubst %.Rmd,%.md,$(wildcard *.Rmd)) $(patsubst %.Rmd,%.R,$(wildcard *.Rmd)) figure/
 
 all: $(OUTS)
 
 clean:
-	rm $(OUTS)
+	rm -rf $(OUTS)
 
-%.html: %.Rmd
-	Rscript -e "knitr::knit2html('$*.Rmd')"
-	Rscript -e "knitr::purl('$*.Rmd')"
+%.md: %.Rmd
+	# knit the file to create a markdown file
+	Rscript -e 'knitr::knit("$*.Rmd")'
+	# change the syntax highlighting to coffee instead of r
 	gsed -i 's/```r/```coffee/g' $*.md
+
+%.R: %.Rmd
+	Rscript -e 'knitr::purl("$*.Rmd")'
