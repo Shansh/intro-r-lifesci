@@ -4,6 +4,7 @@
 .Trashes
 
 # RStudio stuff
+*.Rproj
 .Rproj.user
 .Rhistory
 .RData
