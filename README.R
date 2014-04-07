@@ -12,7 +12,6 @@ opts_chunk$set(results="hide", message=FALSE, fig.show="hide", fig.keep="none")
 ## biocLite()
 ## biocLite("Biobase")
 ## biocLite("DESeq2")
-## biocLite("pasilla")
 
 
 ## ------------------------------------------------------------------------
@@ -345,7 +344,7 @@ distrl <- dist(t(assay(rld)))
 plot(hclust(distrl))
 
 
-## ----sessioninfo---------------------------------------------------------
+## ----sessioninfo, results='markup'---------------------------------------
 sessionInfo()
 
 

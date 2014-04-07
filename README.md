@@ -3,7 +3,7 @@
 
 
 
-This workshop is directed toward life scientists with little to no experience with statistical computing or bioinformatics. This interactive workshop will introduce the R statistical computing environment, including basic instruction in data types, variables, array manipulation, functions, data frames, data import/export, visualization, and using packages. At the end of the workshop, participants will see a live demonstration of a real biomedical application - analysis of publicly available gene expression microarray data. This will demo (1) how to search for and acquire publicly accessible data from NCBI Gene Expression Omnibus, and (2) how to use Bioconductor packages to import, process, QC, analyze, and visualize the results of the analysis. By the end of the workshop, participants will be able to use R for basic data manipulation and visualization, and will know where to look for further help and instruction. Participants will also be exposed to downloading and analyzing publicly available gene expression data. An advanced follow-on course will go through a gene expression data analysis in detail. 
+This workshop is directed toward life scientists with little to no experience with statistical computing or bioinformatics. This interactive workshop will introduce the R statistical computing environment, including basic instruction in data types, variables, array manipulation, functions, data frames, data import/export, visualization, and using packages. At the end of the workshop, participants will see a live demonstration of a real biomedical application - analysis of publicly available RNA-seq data. This will demo (1) how to acquire publicly accessible data from NCBI Gene Expression Omnibus, and (2) how to use Bioconductor packages to import, process, QC, analyze, and visualize the results of the analysis. By the end of the workshop, participants will be able to use R for basic data manipulation and visualization, and will know where to look for further help and instruction. Participants will also be exposed to analyzing RNA-seq data. An advanced follow-on course will go through a gene expression data analysis in detail. 
 
 Link to slides: *coming soon.*
 
@@ -13,9 +13,10 @@ Prior to the workshop, please download the software as below and take the pre-wo
 
 ### Software setup
 
-0. Download and install R for [Mac OS X](http://cran.rstudio.com/bin/macosx/R-3.0.3.pkg) or [Windows](http://cran.rstudio.com/bin/windows/base/R-3.0.3-win.exe)
+0. Download and extract a zip file of this repository (click "Download ZIP" on the right side).
+0. Download and install R for [Mac OS X](http://cran.r-project.org/bin/macosx/) (download the R-3.x.x.pkg file) or [Windows](http://cran.r-project.org/bin/windows/base/)
 0. Download and install RStudio Desktop: <http://www.rstudio.com/ide/download/desktop>.
-0. Run RStudio, and enter the following commands into the "Console" window (usually the lower-right, by default). This will download and install necessary add-on packages we will use in class.
+0. Run RStudio, and enter the following commands into the "Console" window (usually the lower-right, by default). This will download and install necessary add-on packages we will use in class. If anything asks you to update, enter "a" at the prompt to update all packages.
 
 
 ```coffee
@@ -23,7 +24,6 @@ source("http://bioconductor.org/biocLite.R")
 biocLite()
 biocLite("Biobase")
 biocLite("DESeq2")
-biocLite("pasilla")
 ```
 
 
@@ -470,7 +470,7 @@ In this section we'll analyze some publicly available gene expression data using
 
 ### Packages
 
-Most generic R packages are hosted on the Comprehensive R Archive Network (CRAN, <http://cran.us.r-project.org/>). To install one of these packages, you would use `install.packages("packagename")`. You only need to install a package once, then load it each time using `library(packagename)`. Let's install the `ggplot2` package, and load it.
+Most generic R packages are hosted on the Comprehensive R Archive Network (CRAN, <http://cran.us.r-project.org/>). To install one of these packages, you would use `install.packages("packagename")`. You only need to install a package once, then load it each time using `library(packagename)`. Let's install the **ggplot2** package, and load it.
 
 
 ```coffee
@@ -520,11 +520,11 @@ Bioconductor packages usually have great documentation in the form of *vignettes
 
 Now, let's analyze some publicly available gene expression (RNA-seq) data. NCBI Gene Expression Omnibus (<http://www.ncbi.nlm.nih.gov/geo/>) is an international public repository that archives and freely distributes microarray, next-generation sequencing, and other forms of high-throughput functional genomics data submitted by the research community. Many publishers require gene expression data be submitted to GEO and made publicly available before publication. You can learn a lot more about GEO by reading their [overview](http://www.ncbi.nlm.nih.gov/geo/info/overview.html) and [FAQ](http://www.ncbi.nlm.nih.gov/geo/info/faq.html) pages. At the time of this writing, GEO hosts over 45,000 studies comprising over 1,000,000 samples on over 10,000 different technology platforms.
 
-In this demonstration, we're going to be using data from GEO Series accession number GSE18508. You can enter this number in the search box on the GEO homepage, or use [this direct link](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE18508). In this study, the authors performed RNA-sequencing of mRNA from Drosophila melanogaster S2-DRSC cells that have been RNAi depleted of mRNAs encoding RNA binding proteins and splicing factors. This was done as part of the modENCODE project, published in: Brooks AN et al. Conservation of an RNA regulatory map between Drosophila and mammals. *Genome Res* 2011 Feb;21(2):193-202. 
+In this demonstration, we're going to be using data from GEO Series accession number GSE18508. You can enter this number in the search box on the GEO homepage, or use [this direct link](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE18508). In this study, the authors performed RNA-sequencing of mRNA from *Drosophila melanogaster* S2-DRSC cells that have been RNAi depleted of mRNAs encoding RNA binding proteins and splicing factors. This was done as part of the modENCODE project, published in: Brooks AN et al. Conservation of an RNA regulatory map between Drosophila and mammals. *Genome Res* 2011 Feb;21(2):193-202. 
 
-You can go to the [GEO accession page](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE18508) and download all the raw data at the bottom under supplementary data. However, this dataset is nearly 100GB. What I have in this repository is a spreadsheet containing a matrix of gene counts, where genes are in rows and samples are in columns. That is, this data has already been aligned and counted, and the number in the cell is the number of RNA-seq reads that mapped to that gene for that sample. The value in the *i*-th row and the *j*-th column of the matrix tells how many reads have been mapped to gene *i* in sample *j*.
+You can go to the [GEO accession page](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE18508) and download all the raw data at the bottom under supplementary data. However, this dataset is nearly 100GB. What I have in this repository is a spreadsheet containing a matrix of gene counts, where genes are in rows and samples are in columns. That is, this data has already been aligned and counted, and the number in the cell is the number of RNA-seq reads that mapped to that gene for that sample. The value in the *i*-th row and the *j*-th column of the matrix tells how many reads have been mapped to gene *i* in sample *j*. To do these steps yourself, you would need to align reads to the genome (e.g., using [STAR](https://code.google.com/p/rna-star/)) and count reads mapping to features (e.g., using a GTF file from Ensembl and a tool like [featureCounts](http://bioinf.wehi.edu.au/featureCounts/)) 
 
-Note: much of this was adapted from the DESeq2 package vignette.
+Note: much of this was adapted from the [DESeq2 package vignette](http://www.bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.pdf).
 
 #### Load packages
 
@@ -634,5 +634,32 @@ The `sessionInfo()` prints version information about R and any attached packages
 
 ```coffee
 sessionInfo()
+```
+
+```
+## R version 3.0.2 (2013-09-25)
+## Platform: x86_64-apple-darwin10.8.0 (64-bit)
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## attached base packages:
+## [1] parallel  methods   stats     graphics  grDevices utils     datasets 
+## [8] base     
+## 
+## other attached packages:
+##  [1] DESeq2_1.2.10             RcppArmadillo_0.4.100.2.1
+##  [3] Rcpp_0.11.1               GenomicRanges_1.14.4     
+##  [5] XVector_0.2.0             IRanges_1.20.7           
+##  [7] Biobase_2.22.0            BiocGenerics_0.8.0       
+##  [9] knitr_1.5                 BiocInstaller_1.12.0     
+## 
+## loaded via a namespace (and not attached):
+##  [1] annotate_1.40.1      AnnotationDbi_1.24.0 DBI_0.2-7           
+##  [4] evaluate_0.5.3       formatR_0.10         genefilter_1.44.0   
+##  [7] grid_3.0.2           lattice_0.20-29      locfit_1.5-9.1      
+## [10] RColorBrewer_1.0-5   RSQLite_0.11.4       splines_3.0.2       
+## [13] stats4_3.0.2         stringr_0.6.2        survival_2.37-7     
+## [16] tools_3.0.2          XML_3.95-0.2         xtable_1.7-3
 ```
 
